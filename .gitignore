@@ -102,3 +102,9 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# VS Code
+.idea/
+*.apl
+
+testing.py
