@@ -158,9 +158,15 @@ class Boolean(Expression):
     
     def evaluate(self):
         if self.value:
-            return 'true'
+            return '1'
         elif not self.value:
-            return 'false'
+            return '0'
+    
+    def __str__(self):
+        return self.evaluate()
+    
+    def __repr__(self):
+        return self.evaluate()
     
     def __eq__(self, other):
         return Boolean(self.value == other.value)
@@ -263,28 +269,43 @@ class StatementAssign(Expression):
         code = self.p.lexer.lexdata
         line = Global.count
         
-
-        if isinstance(self.value, ExpressionID):
-            if self.dataType != Type.check(type(self.table.get(val).evaluate())):
+        
+        if isinstance(val, ExpressionID) or isinstance(val, ExpressionGroup):
+            
+            if (self.table.get(val) is None) and not (self.dataType == 'BOOLEAN' or \
+                self.table.get(val) is None) and \
+                    self.dataType != Type.check(type(self.table.get(val).evaluate())):
                 IncompatibleTypesException("Incompatible Types", code, line)
         
         set(self.varName, self.value)
 
         self.table = Global.table
 
+        t = type(val)
+
+
+        if str(t)=="<class 'int'>":
+            val = Integer(val)
+        elif str(t)=="<class 'float'>":
+            val = Float(val)
+        elif str(t)=="<class 'bool'>":
+            val = Boolean(val)
+            # Revisar para string
+        
+
         if isinstance(val, str):
             print(self.varName + ' = ' + str(val))
             return val
-        elif self.dataType==Type.INT and isinstance(self.value, Integer):
+        elif self.dataType==Type.INT and isinstance(val, Integer):
             print(self.varName + ' = ' + str(val))
             return val
-        elif self.dataType==Type.DOUBLE and isinstance(self.value, Float):
+        elif self.dataType==Type.DOUBLE and isinstance(val, Float):
             print(self.varName + ' = ' + str(val))
             return val
-        elif self.dataType==Type.BOOLEAN and isinstance(self.value, Boolean):
+        elif self.dataType==Type.BOOLEAN and isinstance(val, Boolean):
             print(self.varName + ' = ' + str(val))
             return val
-        elif self.dataType==Type.STRING and isinstance(self.value, String):
+        elif self.dataType==Type.STRING and isinstance(val, String):
             print(self.varName + ' = ' + str(val))
             return val
         else:
@@ -449,7 +470,7 @@ class ExpressionGroup(Expression):
         self.value = value
 
     def evaluate(self):
-        return self.value
+        return self.value.evaluate()
 
 
 class ExpressionID(Expression):

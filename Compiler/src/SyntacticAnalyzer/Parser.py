@@ -81,12 +81,12 @@ class Parser(object):
 
     def p_statement_assign_boolean(self, p):
         r'''statement : BOOLEAN ID EQUALS expression_boolean SEMICOLON'''
-        # self.table[p[2]] = StatementAssign(p, p[1], p[4], self.table.get(p[2]), p[2])
+        p[0] = StatementAssign('assign', 'BOOLEAN', p, p[2], p[4])
 
 
     def p_statement_assign_string(self, p):
         r'''statement : STRING ID EQUALS expression_string SEMICOLON'''
-        # self.table[p[2]] = StatementAssign(p, p[1], p[4], self.table.get(p[2]), p[2])
+        # p[0] = StatementAssign('assign', 'STRING', p, p[2], p[4])
 
 
     # P_STATEMENT_EXPR
@@ -103,10 +103,10 @@ class Parser(object):
     def p_statement_update_generic(self, p):
         r'''statement : ID UPDATE expression_generic SEMICOLON'''
 
-        if self.table.get(p[1]):
-            self.table[p[1]] = StatementUpdate(p, p[1], self.table[p[1]], p[3])
-        else:
-            self.table[p[1]] = StatementUpdate(p, p[1], None, p[3])
+        # if self.table.get(p[1]):
+        #     self.table[p[1]] = StatementUpdate(p, p[1], self.table[p[1]], p[3])
+        # else:
+        #     self.table[p[1]] = StatementUpdate(p, p[1], None, p[3])
 
 
     # P_EXPRESSION_BINOP
@@ -144,7 +144,7 @@ class Parser(object):
                         | expression_integer SMALL expression_integer
                         | expression_integer SMALL_EQ expression_integer'''
 
-        p[0] = ComparisonBinop(p, p[1], p[3], p[2])
+        # p[0] = ComparisonBinop(p, p[1], p[3], p[2])
     
 
     def p_comparison_binop_float(self, p):
@@ -155,14 +155,14 @@ class Parser(object):
                         | expression_float SMALL expression_float
                         | expression_float SMALL_EQ expression_float'''
 
-        p[0] = ComparisonBinop(p, p[1], p[3], p[2])
+        # p[0] = ComparisonBinop(p, p[1], p[3], p[2])
     
 
     def p_comparison_binop_boolean(self, p):
         r'''comparison : expression_boolean EQUAL expression_boolean
                         | expression_boolean NOTEQ expression_boolean'''
 
-        p[0] = ComparisonBinop(p, p[1], p[3], p[2])
+        # p[0] = ComparisonBinop(p, p[1], p[3], p[2])
     
 
     def p_comparison_binop_string(self, p):
@@ -173,7 +173,7 @@ class Parser(object):
                         | expression_string SMALL expression_string
                         | expression_string SMALL_EQ expression_string'''
 
-        p[0] = ComparisonBinop(p, p[1], p[3], p[2])
+        # p[0] = ComparisonBinop(p, p[1], p[3], p[2])
 
     # P_EXPRESSION_UMINUS
 
@@ -206,12 +206,13 @@ class Parser(object):
 
     def p_expression_group_boolean(self, p):
         r'''expression_boolean : LPAREN expression_boolean RPAREN'''
+        
         p[0] = ExpressionGroup(p, p[2])
 
 
     def p_expression_group_string(self, p):
         r'''expression_string : LPAREN expression_string RPAREN'''
-        p[0] = ExpressionGroup(p, p[2])
+        # p[0] = ExpressionGroup(p, p[2])
 
 
     # P_EXPRESSION
@@ -241,7 +242,7 @@ class Parser(object):
 
     def p_expression_string(self, p):
         r'''expression_string : STRING_CHAIN'''
-        p[0] = String(p[1])
+        # p[0] = String(p[1])
 
 
     # P_EXPRESSION_ID
@@ -258,12 +259,12 @@ class Parser(object):
 
     def p_expression_id_float(self, p):
         r'''expression_float : ID'''
-        # p[0] = ExpressionID(p, p[1], self.table.get(p[1]))
+        p[0] = ExpressionID(p, p[1])
 
 
     def p_expression_id_boolean(self, p):
         r'''expression_boolean : ID'''
-        # p[0] = ExpressionID(p, p[1], self.table.get(p[1]))
+        p[0] = ExpressionID(p, p[1])
 
 
     def p_expression_id_string(self, p):
