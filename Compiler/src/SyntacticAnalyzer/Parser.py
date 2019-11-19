@@ -10,6 +10,7 @@ from Compiler.src.LexicalAnalyzer.Scanner import Lexer
 
 from Compiler.src.SemanticAnalyzer.SemanticAnalyzer import *
 from Compiler.src.Exceptions.Exceptions import *
+import random
 
 class PythonDataType:
     # Variables Estaticas
@@ -77,7 +78,8 @@ class Parser(object):
 
     def p_statement_assign_float(self, p):
         r'''statement : DOUBLE ID EQUALS expression_float SEMICOLON'''
-        # self.table[p[2]] = StatementAssign(p, p[1], p[4], self.table.get(p[2]), p[2])
+        p[0] = StatementAssign('assign', 'DOUBLE', p, p[2], p[4], self.table.get(p[2]) )
+        self.table[p[2]] = p[4]
 
 
     def p_statement_assign_boolean(self, p):
@@ -117,8 +119,11 @@ class Parser(object):
                             | expression_integer MINUS expression_integer
                             | expression_integer TIMES expression_integer
                             | expression_integer DIVIDE expression_integer'''
+        
+        # print(list(p))
+        var = 'var' + str(random.randrange(100))
 
-        p[0] = ExpressionBinop(p, p[1], p[3], p[2])
+        p[0] = ExpressionBinop(p, var,  p[1], p[3], p[2])
 
 
     def p_expression_binop_float(self, p):
@@ -127,7 +132,7 @@ class Parser(object):
                     | expression_float TIMES expression_float
                     | expression_float DIVIDE expression_float'''
 
-        p[0] = ExpressionBinop(p, p[1], p[3], p[2])
+        # p[0] = ExpressionBinop(p, p[1], p[3], p[2])
 
 
     # P_COMPARISON

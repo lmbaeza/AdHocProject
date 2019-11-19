@@ -79,6 +79,12 @@ class Integer(Expression):
     def evaluate(self):
         return self.value
     
+    def __str__(self):
+        return str(self.value)
+    
+    def __repr__(self):
+        return str(self.value)
+    
     def __add__(self, other):
         return Integer(self.value + other.value)
 
@@ -233,7 +239,10 @@ class StatementAssign(Expression):
         code = self.p.lexer.lexdata
         line = Global.count
 
-        if self.dataType==Type.INT and isinstance(self.value, Integer):
+        if isinstance(val, str):
+            print(self.varName + ' = ' + str(val))
+            return val
+        elif self.dataType==Type.INT and isinstance(self.value, Integer):
             print(self.varName + ' = ' + str(val))
             return val
         elif self.dataType==Type.DOUBLE and isinstance(self.value, Float):
@@ -299,49 +308,35 @@ class StatementUpdate(Expression):
 
 class ExpressionBinop(Expression):
     
-    def __init__(self, p, left, right, operator):
+    def __init__(self, p, varName, left, right, operator):
         self.p = p
+        self.varName = varName
         self.left = left
         self.right = right
         self.operator = operator
 
     def evaluate(self):
 
-        if isinstance(self.left, Integer) and isinstance(self.right, Integer):
-            if self.operator == '+':
-                return self.left + self.right
-            elif self.operator == '-':
-                return self.left - self.right
-            elif self.operator == '*':
-                return self.left * self.right
-            elif self.operator == '/':
-                return self.left / self.right
-            else:
-                message = "unsupported operand type(s) for '{0}'".format(self.operator)
-                code = self.p.lexer.lexdata
-                line = Global.count
-                TypeErrorException(message, code, line)
+        if isinstance(self.left, ExpressionGroup):
+            self.left = self.left.evaluate()
+        
+        if isinstance(self.right, ExpressionGroup):
+            self.right = self.right.evaluate()
 
-        elif isinstance(self.left, Float) and isinstance(self.right, Float):
-            if self.operator == '+':
-                return self.left + self.right
-            elif self.operator == '-':
-                return self.left - self.right
-            elif self.operator == '*':
-                return self.left * self.right
-            elif self.operator == '/':
-                return self.left / self.right
-            else:
-                message = "unsupported operand type(s) for '{0}'".format(self.operator)
-                code = self.p.lexer.lexdata
-                line = Global.count
-                TypeErrorException(message, code, line)
-
-        else:
-            message = "bad operand types for binary operator '{0}'".format(self.operator)
-            code = self.p.lexer.lexdata
-            line = Global.count
-            BadOperandException(message, code, line)
+        if isinstance(self.left, ExpressionBinop):
+            self.left = self.left.evaluate()
+        
+        if isinstance(self.right, ExpressionBinop):
+            self.right = self.right.evaluate()
+        
+        print('{x} = {y} {op} {z}'.format(
+            x=self.varName,
+            y=self.left,
+            op=self.operator,
+            z=self.right
+        ))
+        
+        return self.varName
 
 
 class ComparisonBinop(Expression):
