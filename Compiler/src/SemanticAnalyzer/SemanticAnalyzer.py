@@ -4,6 +4,8 @@
 from Compiler.src.SyntacticAnalyzer import Global
 from Compiler.src.Exceptions.Exceptions import *
 
+import random
+
 def incrementCount(number):
     Global.count += number
 
@@ -178,14 +180,46 @@ class String(Expression):
         return Boolean(self.value != other.value)
 
 
+class StatementList(Expression):
+    
+    def __init__(self, value, next):
+        self.value = value
+        self.next = next
+
+    def evaluate(self):
+        if self.value is not None:
+            self.value.evaluate()
+        return self.next
+
+
+class StatementIf(Expression):
+
+    def __init__(self, typeName, comparison, next_):
+        self.type = typeName
+        self.comparison = comparison
+        self.next = next_
+
+    def evaluate(self):
+        number = random.randrange(10)
+        print('IF GOTO L'+str(number))
+        nextTmp = self.next
+
+        while nextTmp is not None:
+            tmp = nextTmp.evaluate()
+            nextTmp = tmp
+        print('L'+str(number)+':')
+
+
 class StatementAssign(Expression):
     
-    def __init__(self, p, variableType, value, tableValue, varName):
+    def __init__(self, typeName, dataType, p,varName, value, tableValue):
+        self.typeName = typeName
+        self.dataType = dataType
         self.p = p
-        self.variableType = variableType
+        self.varName = varName
         self.value = value
         self.tableValue = tableValue
-        self.varName = varName
+        
 
     def evaluate(self):
         if self.tableValue is not None:
@@ -194,18 +228,22 @@ class StatementAssign(Expression):
             line = Global.count
             VariableAlreadyDeclared(message, code, line)
 
-        val = self.value
+        val = self.value.evaluate()
 
         code = self.p.lexer.lexdata
         line = Global.count
 
-        if self.variableType==Type.INT and isinstance(self.value, Integer):
+        if self.dataType==Type.INT and isinstance(self.value, Integer):
+            print(self.varName + ' = ' + str(val))
             return val
-        elif self.variableType==Type.DOUBLE and isinstance(self.value, Float):
+        elif self.dataType==Type.DOUBLE and isinstance(self.value, Float):
+            print(self.varName + ' = ' + str(val))
             return val
-        elif self.variableType==Type.BOOLEAN and isinstance(self.value, Boolean):
+        elif self.dataType==Type.BOOLEAN and isinstance(self.value, Boolean):
+            print(self.varName + ' = ' + str(val))
             return val
-        elif self.variableType==Type.STRING and isinstance(self.value, String):
+        elif self.dataType==Type.STRING and isinstance(self.value, String):
+            print(self.varName + ' = ' + str(val))
             return val
         else:
             IncompatibleTypesException("Incompatible Types", code, line)

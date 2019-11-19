@@ -25,6 +25,8 @@ class Lexer(object):
     t_STRING  = r'(string)'
     t_PRINT   = r'(print)'
     t_PRINTLN = r'(println)'
+    t_FN      = r'(fn)'
+    t_MAIN    = r'(main)'
 
     # Expresiones regulares para comparadores
     t_EQUAL    = r'\=\='
@@ -59,6 +61,8 @@ class Lexer(object):
             'print': 'PRINT',
             'println': 'PRINTLN',
             'if': 'IF',
+            'fn': 'FN',
+            'main': 'MAIN'
         }
 
         self.tokens +=  list([v for k, v in self.keywordws.items()])

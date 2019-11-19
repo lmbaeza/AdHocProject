@@ -40,31 +40,54 @@ class Parser(object):
 
     # P_STATEMENT_ASSIGN
 
-    def p_statements_list(self, p):
+    def p_statement_list(self, p):
         r'''statements-list : statement statements-list
                             | expression_generic statements-list'''
+        
+        p[0] = StatementList(value=p[1], next=p[2])
     
-    def p_statements_list_empty(self, p):
+    def p_statement_list_empty(self, p):
         r'''statements-list : '''
+
+
+    # P_STATEMENT_FN_MAIN
+
+    def p_statement_fn_main(self, p):
+        r'''statement : FN MAIN LPAREN RPAREN LCURLY_BRACKET statements-list RCURLY_BRACKET'''
+
+        next = p[6]
+
+        while next is not None:
+            tmp = next.evaluate()
+            next = tmp
+
+
+    # P_STATEMENT_IF
+    def p_statement_if(self, p):
+        r'''statement : IF LPAREN comparison RPAREN LCURLY_BRACKET statements-list RCURLY_BRACKET'''
+        p[0] = StatementIf('if', p[3], p[6])
+    
 
     def p_statement_assign_integer(self, p):
         r'''statement : INT ID EQUALS expression_integer SEMICOLON'''
-        self.table[p[2]] = StatementAssign(p, p[1], p[4], self.table.get(p[2]), p[2]).evaluate()
+        # self.table[p[2]] = 
+        p[0] = StatementAssign('assign', 'INT', p, p[2], p[4], self.table.get(p[2]) )
+        self.table[p[2]] = p[4]
 
 
     def p_statement_assign_float(self, p):
         r'''statement : DOUBLE ID EQUALS expression_float SEMICOLON'''
-        self.table[p[2]] = StatementAssign(p, p[1], p[4], self.table.get(p[2]), p[2]).evaluate()
+        # self.table[p[2]] = StatementAssign(p, p[1], p[4], self.table.get(p[2]), p[2])
 
 
     def p_statement_assign_boolean(self, p):
         r'''statement : BOOLEAN ID EQUALS expression_boolean SEMICOLON'''
-        self.table[p[2]] = StatementAssign(p, p[1], p[4], self.table.get(p[2]), p[2]).evaluate()
+        # self.table[p[2]] = StatementAssign(p, p[1], p[4], self.table.get(p[2]), p[2])
 
 
     def p_statement_assign_string(self, p):
         r'''statement : STRING ID EQUALS expression_string SEMICOLON'''
-        self.table[p[2]] = StatementAssign(p, p[1], p[4], self.table.get(p[2]), p[2]).evaluate()
+        # self.table[p[2]] = StatementAssign(p, p[1], p[4], self.table.get(p[2]), p[2])
 
 
     # P_STATEMENT_EXPR
@@ -73,7 +96,7 @@ class Parser(object):
         r'''statement : expression_generic SEMICOLON
                     | expression_generic'''
         
-        StatementExpr(p, p[1]).evaluate()
+        StatementExpr(p, p[1])
 
 
     # P_STATEMENT_UPDATE
@@ -82,9 +105,9 @@ class Parser(object):
         r'''statement : ID UPDATE expression_generic SEMICOLON'''
 
         if self.table.get(p[1]):
-            self.table[p[1]] = StatementUpdate(p, p[1], self.table[p[1]], p[3]).evaluate()
+            self.table[p[1]] = StatementUpdate(p, p[1], self.table[p[1]], p[3])
         else:
-            self.table[p[1]] = StatementUpdate(p, p[1], None, p[3]).evaluate()
+            self.table[p[1]] = StatementUpdate(p, p[1], None, p[3])
 
 
     # P_EXPRESSION_BINOP
@@ -95,7 +118,7 @@ class Parser(object):
                             | expression_integer TIMES expression_integer
                             | expression_integer DIVIDE expression_integer'''
 
-        p[0] = ExpressionBinop(p, p[1], p[3], p[2]).evaluate()
+        p[0] = ExpressionBinop(p, p[1], p[3], p[2])
 
 
     def p_expression_binop_float(self, p):
@@ -104,7 +127,7 @@ class Parser(object):
                     | expression_float TIMES expression_float
                     | expression_float DIVIDE expression_float'''
 
-        p[0] = ExpressionBinop(p, p[1], p[3], p[2]).evaluate()
+        p[0] = ExpressionBinop(p, p[1], p[3], p[2])
 
 
     # P_COMPARISON
@@ -118,7 +141,7 @@ class Parser(object):
                         | expression_integer SMALL expression_integer
                         | expression_integer SMALL_EQ expression_integer'''
 
-        p[0] = ComparisonBinop(p, p[1], p[3], p[2]).evaluate()
+        p[0] = ComparisonBinop(p, p[1], p[3], p[2])
     
 
     def p_comparison_binop_float(self, p):
@@ -129,14 +152,14 @@ class Parser(object):
                         | expression_float SMALL expression_float
                         | expression_float SMALL_EQ expression_float'''
 
-        p[0] = ComparisonBinop(p, p[1], p[3], p[2]).evaluate()
+        p[0] = ComparisonBinop(p, p[1], p[3], p[2])
     
 
     def p_comparison_binop_boolean(self, p):
         r'''comparison : expression_boolean EQUAL expression_boolean
                         | expression_boolean NOTEQ expression_boolean'''
 
-        p[0] = ComparisonBinop(p, p[1], p[3], p[2]).evaluate()
+        p[0] = ComparisonBinop(p, p[1], p[3], p[2])
     
 
     def p_comparison_binop_string(self, p):
@@ -147,45 +170,45 @@ class Parser(object):
                         | expression_string SMALL expression_string
                         | expression_string SMALL_EQ expression_string'''
 
-        p[0] = ComparisonBinop(p, p[1], p[3], p[2]).evaluate()
+        p[0] = ComparisonBinop(p, p[1], p[3], p[2])
 
     # P_EXPRESSION_UMINUS
 
     def p_expression_uminus_integer(self, p):
         r'''expression_integer : MINUS expression_integer %prec UMINUS'''
-        p[0] = ExpressionUminus(p, p[2]).evaluate()
+        p[0] = ExpressionUminus(p, p[2])
 
 
     def p_expression_uminus_float(self, p):
         r'''expression_float : MINUS expression_float %prec UMINUS'''
-        p[0] = ExpressionUminus(p, p[2]).evaluate()
+        p[0] = ExpressionUminus(p, p[2])
 
 
     # P_EXPRESSION_GROUP
 
     def p_expression_group_generic(self, p):
         '''expression_generic : LPAREN expression_generic RPAREN'''
-        p[0] = ExpressionGroup(p, p[2]).evaluate()
+        p[0] = ExpressionGroup(p, p[2])
 
 
     def p_expression_group_integer(self, p):
         '''expression_integer : LPAREN expression_integer RPAREN'''
-        p[0] = ExpressionGroup(p, p[2]).evaluate()
+        p[0] = ExpressionGroup(p, p[2])
 
 
     def p_expression_group_float(self, p):
         r'''expression_float : LPAREN expression_float RPAREN'''
-        p[0] = ExpressionGroup(p, p[2]).evaluate()
+        p[0] = ExpressionGroup(p, p[2])
 
 
     def p_expression_group_boolean(self, p):
         r'''expression_boolean : LPAREN expression_boolean RPAREN'''
-        p[0] = ExpressionGroup(p, p[2]).evaluate()
+        p[0] = ExpressionGroup(p, p[2])
 
 
     def p_expression_group_string(self, p):
         r'''expression_string : LPAREN expression_string RPAREN'''
-        p[0] = ExpressionGroup(p, p[2]).evaluate()
+        p[0] = ExpressionGroup(p, p[2])
 
 
     # P_EXPRESSION
@@ -222,27 +245,27 @@ class Parser(object):
 
     def p_expression_id_generic(self, p):
         r'''expression_generic : ID'''
-        p[0] = ExpressionID(p, p[1], self.table.get(p[1])).evaluate()
+        p[0] = ExpressionID(p, p[1], self.table.get(p[1]))
 
 
     def p_expression_id_integer(self, p):
         r'''expression_integer : ID'''
-        p[0] = ExpressionID(p, p[1], self.table.get(p[1])).evaluate()
+        p[0] = ExpressionID(p, p[1], self.table.get(p[1]))
 
 
     def p_expression_id_float(self, p):
         r'''expression_float : ID'''
-        p[0] = ExpressionID(p, p[1], self.table.get(p[1])).evaluate()
+        p[0] = ExpressionID(p, p[1], self.table.get(p[1]))
 
 
     def p_expression_id_boolean(self, p):
         r'''expression_boolean : ID'''
-        p[0] = ExpressionID(p, p[1], self.table.get(p[1])).evaluate()
+        p[0] = ExpressionID(p, p[1], self.table.get(p[1]))
 
 
     def p_expression_id_string(self, p):
         r'''expression_string : ID'''
-        p[0] = ExpressionID(p, p[1], self.table.get(p[1])).evaluate()
+        p[0] = ExpressionID(p, p[1], self.table.get(p[1]))
 
 
     # P_EXPRESSION_COMPARISON
@@ -257,7 +280,7 @@ class Parser(object):
     def p_print_all_type(self, p):
         r'''statement : PRINT LPAREN expression_generic RPAREN SEMICOLON'''
         
-        Print(p, p[3]).evaluate()
+        Print(p, p[3])
 
 
     # P_PRINTLN_ALL_TYPES
@@ -265,14 +288,8 @@ class Parser(object):
     def p_println_all_type(self, p):
         r'''statement : PRINTLN LPAREN expression_generic RPAREN SEMICOLON
                         | PRINTLN LPAREN expression_generic RPAREN'''
-        Println(p, p[3]).evaluate()
+        Println(p, p[3])
 
-
-    # if statement
-    def p_statement_if(self, p):
-        r'''statement : IF LPAREN comparison RPAREN LCURLY_BRACKET statements-list RCURLY_BRACKET'''
-        if p[3]:
-            p[0] = p[5]
 
     # P_EMPTY
 
@@ -285,7 +302,7 @@ class Parser(object):
 
     def p_error(self, p):
         print(p)
-        ErrorNotMatch(p).evaluate()
+        ErrorNotMatch(p)
     
 
     def shell(self):
