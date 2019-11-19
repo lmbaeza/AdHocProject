@@ -71,15 +71,12 @@ class Parser(object):
 
     def p_statement_assign_integer(self, p):
         r'''statement : INT ID EQUALS expression_integer SEMICOLON'''
-        # self.table[p[2]] = 
-        p[0] = StatementAssign('assign', 'INT', p, p[2], p[4], self.table.get(p[2]) )
-        self.table[p[2]] = p[4]
+        p[0] = StatementAssign('assign', 'INT', p, p[2], p[4])
 
 
     def p_statement_assign_float(self, p):
         r'''statement : DOUBLE ID EQUALS expression_float SEMICOLON'''
-        p[0] = StatementAssign('assign', 'DOUBLE', p, p[2], p[4], self.table.get(p[2]) )
-        self.table[p[2]] = p[4]
+        p[0] = StatementAssign('assign', 'DOUBLE', p, p[2], p[4])
 
 
     def p_statement_assign_boolean(self, p):
@@ -120,10 +117,9 @@ class Parser(object):
                             | expression_integer TIMES expression_integer
                             | expression_integer DIVIDE expression_integer'''
         
-        # print(list(p))
         var = 'var' + str(random.randrange(100))
 
-        p[0] = ExpressionBinop(p, var,  p[1], p[3], p[2])
+        p[0] = ExpressionBinop('BinOp', p, var,  p[1], p[3], p[2])
 
 
     def p_expression_binop_float(self, p):
@@ -132,7 +128,9 @@ class Parser(object):
                     | expression_float TIMES expression_float
                     | expression_float DIVIDE expression_float'''
 
-        # p[0] = ExpressionBinop(p, p[1], p[3], p[2])
+        var = 'var' + str(random.randrange(100))
+
+        p[0] = ExpressionBinop('BinOp', p, var,  p[1], p[3], p[2])
 
 
     # P_COMPARISON
@@ -250,27 +248,27 @@ class Parser(object):
 
     def p_expression_id_generic(self, p):
         r'''expression_generic : ID'''
-        p[0] = ExpressionID(p, p[1], self.table.get(p[1]))
+        p[0] = ExpressionID(p, p[1])
 
 
     def p_expression_id_integer(self, p):
         r'''expression_integer : ID'''
-        p[0] = ExpressionID(p, p[1], self.table.get(p[1]))
+        p[0] = ExpressionID(p, p[1])
 
 
     def p_expression_id_float(self, p):
         r'''expression_float : ID'''
-        p[0] = ExpressionID(p, p[1], self.table.get(p[1]))
+        # p[0] = ExpressionID(p, p[1], self.table.get(p[1]))
 
 
     def p_expression_id_boolean(self, p):
         r'''expression_boolean : ID'''
-        p[0] = ExpressionID(p, p[1], self.table.get(p[1]))
+        # p[0] = ExpressionID(p, p[1], self.table.get(p[1]))
 
 
     def p_expression_id_string(self, p):
         r'''expression_string : ID'''
-        p[0] = ExpressionID(p, p[1], self.table.get(p[1]))
+        # p[0] = ExpressionID(p, p[1], self.table.get(p[1]))
 
 
     # P_EXPRESSION_COMPARISON

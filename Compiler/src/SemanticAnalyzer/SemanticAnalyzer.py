@@ -9,6 +9,12 @@ import random
 def incrementCount(number):
     Global.count += number
 
+def set(key, value):
+    Global.table[key] = value
+
+def get(key):
+    return Global.table.get(key)
+
 
 class Type:
     # Variables Estaticas
@@ -21,6 +27,18 @@ class Type:
     DOUBLE = 'DOUBLE'
     BOOLEAN = 'BOOLEAN'
     STRING = 'STRING'
+
+    @staticmethod
+    def check(typeName):
+        typeName = str(typeName)
+        if typeName == "<class 'int'>":
+            return 'INT'
+        elif typeName == "<class 'float'>":
+            return 'BOOLEAN'
+        elif typeName == "<class 'str'>":
+            return 'STRING'
+        elif typeName == "<class 'bool'>":
+            return 'BOOLEAN'
 
 
 class Expression(object):
@@ -36,6 +54,12 @@ class Float(Expression):
     
     def evaluate(self):
         return self.value
+    
+    def __str__(self):
+        return str(self.value)
+    
+    def __repr__(self):
+        return str(self.value)
     
     def __add__(self, other):
         return Float(self.value + other.value)
@@ -218,26 +242,35 @@ class StatementIf(Expression):
 
 class StatementAssign(Expression):
     
-    def __init__(self, typeName, dataType, p,varName, value, tableValue):
+    def __init__(self, typeName, dataType, p,varName, value):
         self.typeName = typeName
         self.dataType = dataType
         self.p = p
         self.varName = varName
         self.value = value
-        self.tableValue = tableValue
+        self.table = Global.table
         
 
     def evaluate(self):
-        if self.tableValue is not None:
-            message = "variable '{0}' variable x is already defined".format(self.varName)
+
+        if self.table.get(self.varName) is not None:
+            message = "variable '{0}' is already defined".format(self.varName)
             code = self.p.lexer.lexdata
             line = Global.count
             VariableAlreadyDeclared(message, code, line)
 
         val = self.value.evaluate()
-
         code = self.p.lexer.lexdata
         line = Global.count
+        
+
+        if isinstance(self.value, ExpressionID):
+            if self.dataType != Type.check(type(self.table.get(val).evaluate())):
+                IncompatibleTypesException("Incompatible Types", code, line)
+        
+        set(self.varName, self.value)
+
+        self.table = Global.table
 
         if isinstance(val, str):
             print(self.varName + ' = ' + str(val))
@@ -308,7 +341,8 @@ class StatementUpdate(Expression):
 
 class ExpressionBinop(Expression):
     
-    def __init__(self, p, varName, left, right, operator):
+    def __init__(self,typeName,  p, varName, left, right, operator):
+        self.typeName = typeName
         self.p = p
         self.varName = varName
         self.left = left
@@ -316,7 +350,6 @@ class ExpressionBinop(Expression):
         self.operator = operator
 
     def evaluate(self):
-
         if isinstance(self.left, ExpressionGroup):
             self.left = self.left.evaluate()
         
@@ -329,6 +362,12 @@ class ExpressionBinop(Expression):
         if isinstance(self.right, ExpressionBinop):
             self.right = self.right.evaluate()
         
+        if isinstance(self.left, ExpressionID):
+            self.left = self.left.evaluate()
+        
+        if isinstance(self.right, ExpressionID):
+            self.right = self.right.evaluate()
+
         print('{x} = {y} {op} {z}'.format(
             x=self.varName,
             y=self.left,
@@ -415,21 +454,19 @@ class ExpressionGroup(Expression):
 
 class ExpressionID(Expression):
 
-    def __init__(self, p, name, value):
+    def __init__(self, p, name):
         self.p = p
         self.name = name
-        self.value = None
-
-        if value is not None:
-            self.value = value
-        else:
-            message = " name '{0}' is not defined".format(self.name)
-            code = self.p.lexer.lexdata
-            line = Global.count
-            NameException(message, code, line)
+        self.value =get(name)
 
     def evaluate(self):
-        return self.value
+        # if self.value is  None:
+        #     message = " name '{0}' is not defined".format(self.name)
+        #     code = self.p.lexer.lexdata
+        #     line = Global.count
+        #     NameException(message, code, line)
+        
+        return self.name
 
 
 class Print(Expression):
