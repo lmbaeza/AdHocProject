@@ -61,6 +61,7 @@ class Lexer(object):
             'print': 'PRINT',
             'println': 'PRINTLN',
             'if': 'IF',
+            'else': 'ELSE',
             'fn': 'FN',
             'main': 'MAIN'
         }

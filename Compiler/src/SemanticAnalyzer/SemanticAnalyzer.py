@@ -237,13 +237,45 @@ class StatementIf(Expression):
 
     def evaluate(self):
         number = random.randrange(10)
-        print('IF GOTO L'+str(number))
+        comp = self.comparison.evaluate()
+        print('IFNOT {comp} GOTO :ENDIF'.format(comp=comp)+str(number)+':')
         nextTmp = self.next
 
         while nextTmp is not None:
             tmp = nextTmp.evaluate()
             nextTmp = tmp
-        print('L'+str(number)+':')
+        print(':ENDIF'+str(number)+':')
+
+
+class StatementIfElse(Expression):
+    
+    def __init__(self, typeName, comparison, nextif, nextelse):
+        self.type = typeName
+        self.comparison = comparison
+        self.nextIf = nextif
+        self.nextElse = nextelse
+
+    def evaluate(self):
+        number = random.randrange(10)
+        comp = self.comparison.evaluate()
+        print('IFNOT {comp} GOTO :ELSE_'.format(comp=comp)+str(number)+':')
+        nextTmp = self.nextIf
+
+        while nextTmp is not None:
+            tmp = nextTmp.evaluate()
+            nextTmp = tmp
+        
+        print('GOTO :ENDIF_{id}:'.format(id=55))
+
+        print(':ELSE_'+str(number)+':')
+        
+        nextTmp = self.nextElse
+
+        while nextTmp is not None:
+            tmp = nextTmp.evaluate()
+            nextTmp = tmp
+        
+        print(':ENDIF_{id}:'.format(id=55))
 
 
 class StatementAssign(Expression):
@@ -401,50 +433,43 @@ class ExpressionBinop(Expression):
 
 class ComparisonBinop(Expression):
     
-    def __init__(self, p, left, right, operator):
+    def __init__(self, typeName, p, varName, left, right, operator):
+        self.typeName = typeName
         self.p = p
+        self.varName = varName
         self.left = left
         self.right = right
         self.operator = operator
+        self.table = Global.table
 
     def evaluate(self):
 
-        if type(self.left) == type(self.right) and (isinstance(self.left, Integer) or\
-            isinstance(self.left, Float) or isinstance(self.left, String)):
-            if self.operator == '==':
-                return self.left == self.right
-            elif self.operator == '!=':
-                return self.left != self.right
-            elif self.operator == '>':
-                return self.left > self.right
-            elif self.operator == '>=':
-                return self.left >= self.right
-            elif self.operator == '<':
-                return self.left < self.right
-            elif self.operator == '<=':
-                return self.left <= self.right
-            else:
-                message = "unsupported operand type(s) for '{0}'".format(self.operator)
-                code = self.p.lexer.lexdata
-                line = Global.count
-                TypeErrorException(message, code, line)
+        if isinstance(self.left, ExpressionGroup):
+            self.left = self.left.evaluate()
+        
+        if isinstance(self.right, ExpressionGroup):
+            self.right = self.right.evaluate()
 
-        elif type(self.left) == type(self.right) and isinstance(self.left, Boolean):
-            if self.operator == '==':
-                return self.left == self.right
-            elif self.operator == '!=':
-                return self.left != self.right
-            else:
-                message = "unsupported operand type(s) for '{0}'".format(self.operator)
-                code = self.p.lexer.lexdata
-                line = Global.count
-                TypeErrorException(message, code, line)
+        if isinstance(self.left, ExpressionBinop):
+            self.left = self.left.evaluate()
+        
+        if isinstance(self.right, ExpressionBinop):
+            self.right = self.right.evaluate()
+        
+        if isinstance(self.left, ExpressionID):
+            self.left = self.left.evaluate()
+        
+        if isinstance(self.right, ExpressionID):
+            self.right = self.right.evaluate()
+        
+        print('{x} = {y} {op} {z}'.format(
+            x=self.varName,
+            y=self.left,
+            op=self.operator,
+            z=self.right
+        ))
 
-        else:
-            message = "bad operand types for binary operator '{0}'".format(self.operator)
-            code = self.p.lexer.lexdata
-            line = Global.count
-            BadOperandException(message, code, line)
+        return self.varName
 
 
 class ExpressionUminus(Expression):

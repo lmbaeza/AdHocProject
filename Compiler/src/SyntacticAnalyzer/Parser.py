@@ -65,8 +65,14 @@ class Parser(object):
 
     # P_STATEMENT_IF
     def p_statement_if(self, p):
-        r'''statement : IF LPAREN comparison RPAREN LCURLY_BRACKET statements-list RCURLY_BRACKET'''
-        p[0] = StatementIf('if', p[3], p[6])
+        r'''statement : IF LPAREN expression_generic RPAREN LCURLY_BRACKET statements-list RCURLY_BRACKET'''
+        p[0] = StatementIf('If', p[3], p[6])
+
+
+    # P_STATEMENT_IF_ELSE
+    def p_statement_if_else(self, p):
+        r'''statement : IF LPAREN expression_generic RPAREN LCURLY_BRACKET statements-list RCURLY_BRACKET ELSE LCURLY_BRACKET statements-list RCURLY_BRACKET'''
+        p[0] = StatementIfElse('IfElse', p[3], p[6], p[10])
     
 
     def p_statement_assign_integer(self, p):
@@ -143,8 +149,8 @@ class Parser(object):
                         | expression_integer LARGE_EQ expression_integer
                         | expression_integer SMALL expression_integer
                         | expression_integer SMALL_EQ expression_integer'''
-
-        # p[0] = ComparisonBinop(p, p[1], p[3], p[2])
+        var = 'var' + str(random.randrange(100))
+        p[0] = ComparisonBinop('ComparisonBinOp', p, var, p[1], p[3], p[2])
     
 
     def p_comparison_binop_float(self, p):
