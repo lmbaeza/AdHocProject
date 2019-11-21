@@ -4,10 +4,21 @@
 from Compiler.src.SyntacticAnalyzer import Global
 from Compiler.src.Exceptions.Exceptions import *
 
-import random
 
 def incrementCount(number):
     Global.count += number
+
+def incrementVariableCounter():
+    Global.variableCounter += 1
+    return Global.variableCounter
+
+def incrementLabelCounter():
+    Global.labelCounter += 1
+    return Global.labelCounter
+
+def incrementComparisonCounter():
+    Global.comparisonCounter += 1
+    return Global.comparisonCounter
 
 def set(key, value):
     Global.table[key] = value
@@ -236,7 +247,7 @@ class StatementIf(Expression):
         self.next = next_
 
     def evaluate(self):
-        number = random.randrange(10)
+        number = incrementLabelCounter()
         comp = self.comparison.evaluate()
         print('IFNOT {comp} GOTO :ENDIF'.format(comp=comp)+str(number)+':')
         nextTmp = self.next
@@ -256,7 +267,7 @@ class StatementIfElse(Expression):
         self.nextElse = nextelse
 
     def evaluate(self):
-        number = random.randrange(10)
+        number = incrementLabelCounter()
         comp = self.comparison.evaluate()
         print('IFNOT {comp} GOTO :ELSE_'.format(comp=comp)+str(number)+':')
         nextTmp = self.nextIf
@@ -265,7 +276,8 @@ class StatementIfElse(Expression):
             tmp = nextTmp.evaluate()
             nextTmp = tmp
         
-        print('GOTO :ENDIF_{id}:'.format(id=55))
+        numberElse = incrementLabelCounter()
+        print('GOTO :ENDIF_{id}:'.format(id=numberElse))
 
         print(':ELSE_'+str(number)+':')
         
@@ -275,7 +287,7 @@ class StatementIfElse(Expression):
             tmp = nextTmp.evaluate()
             nextTmp = tmp
         
-        print(':ENDIF_{id}:'.format(id=55))
+        print(':ENDIF_{id}:'.format(id=numberElse))
 
 
 class StatementAssign(Expression):
@@ -397,7 +409,7 @@ class ExpressionBinop(Expression):
     def __init__(self,typeName,  p, varName, left, right, operator):
         self.typeName = typeName
         self.p = p
-        self.varName = varName
+        self.varName = varName + str(incrementVariableCounter())
         self.left = left
         self.right = right
         self.operator = operator
@@ -436,7 +448,7 @@ class ComparisonBinop(Expression):
     def __init__(self, typeName, p, varName, left, right, operator):
         self.typeName = typeName
         self.p = p
-        self.varName = varName
+        self.varName = varName + str(incrementComparisonCounter())
         self.left = left
         self.right = right
         self.operator = operator

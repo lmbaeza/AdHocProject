@@ -123,7 +123,7 @@ class Parser(object):
                             | expression_integer TIMES expression_integer
                             | expression_integer DIVIDE expression_integer'''
         
-        var = 'var' + str(random.randrange(100))
+        var = 'var'
 
         p[0] = ExpressionBinop('BinOp', p, var,  p[1], p[3], p[2])
 
@@ -134,7 +134,7 @@ class Parser(object):
                     | expression_float TIMES expression_float
                     | expression_float DIVIDE expression_float'''
 
-        var = 'var' + str(random.randrange(100))
+        var = 'var'
 
         p[0] = ExpressionBinop('BinOp', p, var,  p[1], p[3], p[2])
 
@@ -149,7 +149,7 @@ class Parser(object):
                         | expression_integer LARGE_EQ expression_integer
                         | expression_integer SMALL expression_integer
                         | expression_integer SMALL_EQ expression_integer'''
-        var = 'var' + str(random.randrange(100))
+        var = 'comp'
         p[0] = ComparisonBinop('ComparisonBinOp', p, var, p[1], p[3], p[2])
     
 
