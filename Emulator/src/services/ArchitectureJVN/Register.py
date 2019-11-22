@@ -22,33 +22,33 @@ class Register(object):
 # class DataRegister(Register):
 
 # TODO:
-# 1) Crear las clases 'MicroInstructionRegister' que herede de la clase abstracta 'Register'
+# 1) Crear las clases 'MicroServiceRegister' que herede de la clase abstracta 'Register'
 # 2) Agregar los atributos y Metodos
-# class MicroInstructionRegister(Register):
+# class MicroServiceRegister(Register):
 
 # TODO:
 # AX: Primary Accumulator
-# 1) Crear las clases 'AX_Register' que herede de la clase 'DataRegister'
+# 1) Crear las clases 'A_Register' que herede de la clase 'DataRegister'
 # 2) Agregar los atributos y Metodos
-# class AX_Register(DataRegister):
+# class A_Register(DataRegister):
 
 # TODO:
 # BX: Base Register
-# 1) Crear las clases 'BX_Register' que herede de la clase 'DataRegister'
+# 1) Crear las clases 'B_Register' que herede de la clase 'DataRegister'
 # 2) Agregar los atributos y Metodos
-# class BX_Register(DataRegister):
+# class B_Register(DataRegister):
 
 # TODO:
 # CX: Count Register
-# 1) Crear las clases 'CX_Register' que herede de la clase 'DataRegister'
+# 1) Crear las clases 'C_Register' que herede de la clase 'DataRegister'
 # 2) Agregar los atributos y Metodos
-# class CX_Register(DataRegister):
+# class C_Register(DataRegister):
 
 # TODO:
 # DX: Data Register
-# 1) Crear las clases 'DX_Register' que herede de la clase 'DataRegister'
+# 1) Crear las clases 'D_Register' que herede de la clase 'DataRegister'
 # 2) Agregar los atributos y Metodos
-# class DX_Register(DataRegister):
+# class D_Register(DataRegister):
 
 # TODO:
 # IR: Instruction Register
