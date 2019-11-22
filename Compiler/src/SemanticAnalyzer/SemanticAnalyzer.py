@@ -4,8 +4,27 @@
 from Compiler.src.SyntacticAnalyzer import Global
 from Compiler.src.Exceptions.Exceptions import *
 
+
 def incrementCount(number):
     Global.count += number
+
+def incrementVariableCounter():
+    Global.variableCounter += 1
+    return Global.variableCounter
+
+def incrementLabelCounter():
+    Global.labelCounter += 1
+    return Global.labelCounter
+
+def incrementComparisonCounter():
+    Global.comparisonCounter += 1
+    return Global.comparisonCounter
+
+def set(key, value):
+    Global.table[key] = value
+
+def get(key):
+    return Global.table.get(key)
 
 
 class Type:
@@ -20,13 +39,25 @@ class Type:
     BOOLEAN = 'BOOLEAN'
     STRING = 'STRING'
 
+    @staticmethod
+    def check(typeName):
+        typeName = str(typeName)
+        if typeName == "<class 'int'>":
+            return 'INT'
+        elif typeName == "<class 'float'>":
+            return 'BOOLEAN'
+        elif typeName == "<class 'str'>":
+            return 'STRING'
+        elif typeName == "<class 'bool'>":
+            return 'BOOLEAN'
 
+# Clase padre para todas las Expresiones
 class Expression(object):
     def evaluate(self):
         # Aca se implementa cada tipo de expresion.
         raise NotImplementedError
 
-
+# Expresión para los Numeros Flotantes
 class Float(Expression):
 
     def __init__(self, value):
@@ -34,6 +65,12 @@ class Float(Expression):
     
     def evaluate(self):
         return self.value
+    
+    def __str__(self):
+        return str(self.value)
+    
+    def __repr__(self):
+        return str(self.value)
     
     def __add__(self, other):
         return Float(self.value + other.value)
@@ -68,7 +105,7 @@ class Float(Expression):
     def __neg__(self):
         return Float(-self.value)
 
-
+# Expresión para los Numeros Enteros
 class Integer(Expression):
     
     def __init__(self, value):
@@ -76,6 +113,12 @@ class Integer(Expression):
     
     def evaluate(self):
         return self.value
+    
+    def __str__(self):
+        return str(self.value)
+    
+    def __repr__(self):
+        return str(self.value)
     
     def __add__(self, other):
         return Integer(self.value + other.value)
@@ -110,7 +153,7 @@ class Integer(Expression):
     def __neg__(self):
         return Integer(-self.value)
 
-
+# Expresiones Booleanas
 class Boolean(Expression):
     
     def __init__(self, value):
@@ -126,9 +169,15 @@ class Boolean(Expression):
     
     def evaluate(self):
         if self.value:
-            return 'true'
+            return '1'
         elif not self.value:
-            return 'false'
+            return '0'
+    
+    def __str__(self):
+        return self.evaluate()
+    
+    def __repr__(self):
+        return self.evaluate()
     
     def __eq__(self, other):
         return Boolean(self.value == other.value)
@@ -137,6 +186,7 @@ class Boolean(Expression):
         return Boolean(self.value != other.value)
 
 
+# Expresiones de String
 class String(Expression):
     
     def __init__(self, value):
@@ -178,182 +228,320 @@ class String(Expression):
         return Boolean(self.value != other.value)
 
 
-class StatementAssign(Expression):
+# Lista de Expresiones
+class StatementList(Expression):
     
-    def __init__(self, p, variableType, value, tableValue, varName):
-        self.p = p
-        self.variableType = variableType
+    def __init__(self, value, next):
         self.value = value
-        self.tableValue = tableValue
-        self.varName = varName
+        self.next = next
 
     def evaluate(self):
-        if self.tableValue is not None:
-            message = "variable '{0}' variable x is already defined".format(self.varName)
+        if self.value is not None:
+            self.value.evaluate()
+        return self.next
+
+# Expresion de la sentencia IF
+# if (comparison) {
+#     <expresion>
+#     ...........
+#     <expresion>
+# }
+class StatementIf(Expression):
+
+    def __init__(self, typeName, comparison, next_):
+        self.type = typeName
+        self.comparison = comparison
+        self.next = next_
+
+    def evaluate(self):
+        number = incrementLabelCounter()
+        comp = self.comparison.evaluate()
+        print('IFNOT {comp} GOTO :ENDIF'.format(comp=comp)+str(number)+':')
+        nextTmp = self.next
+
+        while nextTmp is not None:
+            tmp = nextTmp.evaluate()
+            nextTmp = tmp
+        print(':ENDIF'+str(number)+':')
+
+# Expresion de la sentencia IF-ELSE
+# if (comparison) {
+#     <expresion>
+#     ...........
+#     <expresion>
+# } else {
+#     <expresion>
+#     ...........
+#     <expresion>
+# }
+class StatementIfElse(Expression):
+    
+    def __init__(self, typeName, comparison, nextif, nextelse):
+        self.type = typeName
+        self.comparison = comparison
+        self.nextIf = nextif
+        self.nextElse = nextelse
+
+    def evaluate(self):
+        number = incrementLabelCounter()
+        comp = self.comparison.evaluate()
+        print('IFNOT {comp} GOTO :ELSE_'.format(comp=comp)+str(number)+':')
+        nextTmp = self.nextIf
+
+        while nextTmp is not None:
+            tmp = nextTmp.evaluate()
+            nextTmp = tmp
+        
+        numberElse = incrementLabelCounter()
+        print('GOTO :ENDIF_{id}:'.format(id=numberElse))
+
+        print(':ELSE_'+str(number)+':')
+        
+        nextTmp = self.nextElse
+
+        while nextTmp is not None:
+            tmp = nextTmp.evaluate()
+            nextTmp = tmp
+        
+        print(':ENDIF_{id}:'.format(id=numberElse))
+
+
+# Expresion de Asignación
+# int x = 0;
+# double x = 0.0;
+# boolean x = true;
+class StatementAssign(Expression):
+    
+    def __init__(self, typeName, dataType, p,varName, value):
+        self.typeName = typeName
+        self.dataType = dataType
+        self.p = p
+        self.varName = varName
+        self.value = value
+        self.table = Global.table
+        
+
+    def evaluate(self):
+
+        if self.table.get(self.varName) is not None:
+            message = "variable '{0}' is already defined".format(self.varName)
             code = self.p.lexer.lexdata
             line = Global.count
             VariableAlreadyDeclared(message, code, line)
 
-        val = self.value
-
+        val = self.value.evaluate()
         code = self.p.lexer.lexdata
         line = Global.count
+        
+        if isinstance(self.value, ExpressionID) or isinstance(self.value, ExpressionGroup):
+            print(self.value)
+            if (self.table.get(val) is None) or not (self.dataType == 'BOOLEAN' or \
+                self.table.get(val) is None) or \
+                    self.dataType != Type.check(type(self.table.get(val).evaluate())):
+                IncompatibleTypesException("Incompatible Types", code, line)
+        
+        set(self.varName, self.value)
 
-        if self.variableType==Type.INT and isinstance(self.value, Integer):
+        self.table = Global.table
+
+        t = type(val)
+
+        if str(t)=="<class 'int'>":
+            val = Integer(val)
+        elif str(t)=="<class 'float'>":
+            val = Float(val)
+        elif str(t)=="<class 'bool'>":
+            val = Boolean(val)
+        # Revisar para string
+        
+        if isinstance(val, str):
+            print(self.varName + ' = ' + str(val))
             return val
-        elif self.variableType==Type.DOUBLE and isinstance(self.value, Float):
+        elif self.dataType==Type.INT and isinstance(val, Integer):
+            print(self.varName + ' = ' + str(val))
             return val
-        elif self.variableType==Type.BOOLEAN and isinstance(self.value, Boolean):
+        elif self.dataType==Type.DOUBLE and isinstance(val, Float):
+            print(self.varName + ' = ' + str(val))
             return val
-        elif self.variableType==Type.STRING and isinstance(self.value, String):
+        elif self.dataType==Type.BOOLEAN and isinstance(val, Boolean):
+            print(self.varName + ' = ' + str(val))
+            return val
+        elif self.dataType==Type.STRING and isinstance(val, String):
+            print(self.varName + ' = ' + str(val))
             return val
         else:
             IncompatibleTypesException("Incompatible Types", code, line)
 
 
 
-class StatementExpr(Expression):
-    def __init__(self, p, value):
-        self.p = p
-        self.value = value
+# class StatementExpr(Expression):
+#     def __init__(self, p, value):
+#         self.p = p
+#         self.value = value
 
-    def evaluate(self):
+#     def evaluate(self):
         
-        if isinstance(self.value, Expression):
-            print(self.value.evaluate())
+#         if isinstance(self.value, Expression):
+#             print(self.value.evaluate())
 
 
-
+# Expresion de actualización
+# x := 0;
+# x := 0.0;
+# x := true;
 class StatementUpdate(Expression):
     
-    def __init__(self, p,varName, oldType, value):
+    def __init__(self, typeName, p, varName, value):
+        self.typeName = typeName
         self.p = p
         self.varName = varName
         self.value = value
+        self.table = Global.table
         self.oldType = None
 
-        if oldType is not None:
-            self.oldType = oldType
-        else:
+    def evaluate(self):
+        self.oldType = self.table.get(self.varName)
+
+        if self.oldType is None:
             message = "variable '{0}' has not been declared".format(self.varName)
             code = self.p.lexer.lexdata
             line = Global.count
             UndeclaredVariable(message, code, line)
-
-
-    def evaluate(self):
-        val = self.value
-
+        
+        val = self.value.evaluate()
         code = self.p.lexer.lexdata
         line = Global.count
+        
+        set(self.varName, self.value)
 
-        if isinstance(self.oldType, Integer) and isinstance(self.value, Integer):
+        self.table = Global.table
+
+        t = type(val)
+
+        if str(t)=="<class 'int'>":
+            val = Integer(val)
+        elif str(t)=="<class 'float'>":
+            val = Float(val)
+        elif str(t)=="<class 'bool'>":
+            val = Boolean(val)
+        # Revisar para string
+        
+        if isinstance(self.oldType, Integer) and isinstance(val, Integer):
+            print(self.varName + ' = ' + str(val))
             return val
-        elif isinstance(self.oldType, Float) and isinstance(self.value, Float):
+        elif isinstance(self.oldType, Float) and isinstance(val, Float):
+            print(self.varName + ' = ' + str(val))
             return val
-        elif isinstance(self.oldType, Boolean) and isinstance(self.value, Boolean):
+        elif isinstance(self.oldType, Boolean) and isinstance(val, Boolean):
+            print(self.varName + ' = ' + str(val))
             return val
-        elif isinstance(self.oldType, String) and isinstance(self.value, String):
+        elif isinstance(self.oldType, String) and isinstance(val, String):
+            print(self.varName + ' = ' + str(val))
             return val
         else:
+            if isinstance(self.value, ExpressionID):
+                if str(type(self.table.get(val))) == str(type(self.oldType)):
+                    print(self.varName + ' = ' + str(val))
+                    return
+            elif isinstance(self.value, ExpressionBinop):
+                print(self.varName + ' = ' + str(val))
+                return
+            elif isinstance(self.value, ExpressionGroup):
+                print(self.varName + ' = ' + str(val))
+                return
+
             IncompatibleTypesException("Incompatible Types", code, line)
 
 
+# Expresion de Operacion Binaria
+# a + b
+# a - b
+# a * b
+# a / b
 class ExpressionBinop(Expression):
     
-    def __init__(self, p, left, right, operator):
+    def __init__(self,typeName,  p, varName, left, right, operator):
+        self.typeName = typeName
         self.p = p
+        self.varName = varName + str(incrementVariableCounter())
         self.left = left
         self.right = right
         self.operator = operator
 
     def evaluate(self):
+        if isinstance(self.left, ExpressionGroup):
+            self.left = self.left.evaluate()
+        
+        if isinstance(self.right, ExpressionGroup):
+            self.right = self.right.evaluate()
 
-        if isinstance(self.left, Integer) and isinstance(self.right, Integer):
-            if self.operator == '+':
-                return self.left + self.right
-            elif self.operator == '-':
-                return self.left - self.right
-            elif self.operator == '*':
-                return self.left * self.right
-            elif self.operator == '/':
-                return self.left / self.right
-            else:
-                message = "unsupported operand type(s) for '{0}'".format(self.operator)
-                code = self.p.lexer.lexdata
-                line = Global.count
-                TypeErrorException(message, code, line)
+        if isinstance(self.left, ExpressionBinop):
+            self.left = self.left.evaluate()
+        
+        if isinstance(self.right, ExpressionBinop):
+            self.right = self.right.evaluate()
+        
+        if isinstance(self.left, ExpressionID):
+            self.left = self.left.evaluate()
+        
+        if isinstance(self.right, ExpressionID):
+            self.right = self.right.evaluate()
 
-        elif isinstance(self.left, Float) and isinstance(self.right, Float):
-            if self.operator == '+':
-                return self.left + self.right
-            elif self.operator == '-':
-                return self.left - self.right
-            elif self.operator == '*':
-                return self.left * self.right
-            elif self.operator == '/':
-                return self.left / self.right
-            else:
-                message = "unsupported operand type(s) for '{0}'".format(self.operator)
-                code = self.p.lexer.lexdata
-                line = Global.count
-                TypeErrorException(message, code, line)
-
-        else:
-            message = "bad operand types for binary operator '{0}'".format(self.operator)
-            code = self.p.lexer.lexdata
-            line = Global.count
-            BadOperandException(message, code, line)
+        print('{x} = {y} {op} {z}'.format(
+            x=self.varName,
+            y=self.left,
+            op=self.operator,
+            z=self.right
+        ))
+        
+        return self.varName
 
 
+# Expresion de Comparación para Operadores Binarios
+# a > b, a >= b
+# a < b, a <= b
 class ComparisonBinop(Expression):
     
-    def __init__(self, p, left, right, operator):
+    def __init__(self, typeName, p, varName, left, right, operator):
+        self.typeName = typeName
         self.p = p
+        self.varName = varName + str(incrementComparisonCounter())
         self.left = left
         self.right = right
         self.operator = operator
+        self.table = Global.table
 
     def evaluate(self):
 
-        if type(self.left) == type(self.right) and (isinstance(self.left, Integer) or\
-            isinstance(self.left, Float) or isinstance(self.left, String)):
-            if self.operator == '==':
-                return self.left == self.right
-            elif self.operator == '!=':
-                return self.left != self.right
-            elif self.operator == '>':
-                return self.left > self.right
-            elif self.operator == '>=':
-                return self.left >= self.right
-            elif self.operator == '<':
-                return self.left < self.right
-            elif self.operator == '<=':
-                return self.left <= self.right
-            else:
-                message = "unsupported operand type(s) for '{0}'".format(self.operator)
-                code = self.p.lexer.lexdata
-                line = Global.count
-                TypeErrorException(message, code, line)
+        if isinstance(self.left, ExpressionGroup):
+            self.left = self.left.evaluate()
+        
+        if isinstance(self.right, ExpressionGroup):
+            self.right = self.right.evaluate()
 
-        elif type(self.left) == type(self.right) and isinstance(self.left, Boolean):
-            if self.operator == '==':
-                return self.left == self.right
-            elif self.operator == '!=':
-                return self.left != self.right
-            else:
-                message = "unsupported operand type(s) for '{0}'".format(self.operator)
-                code = self.p.lexer.lexdata
-                line = Global.count
-                TypeErrorException(message, code, line)
+        if isinstance(self.left, ExpressionBinop):
+            self.left = self.left.evaluate()
+        
+        if isinstance(self.right, ExpressionBinop):
+            self.right = self.right.evaluate()
+        
+        if isinstance(self.left, ExpressionID):
+            self.left = self.left.evaluate()
+        
+        if isinstance(self.right, ExpressionID):
+            self.right = self.right.evaluate()
+        
+        print('{x} = {y} {op} {z}'.format(
+            x=self.varName,
+            y=self.left,
+            op=self.operator,
+            z=self.right
+        ))
 
-        else:
-            message = "bad operand types for binary operator '{0}'".format(self.operator)
-            code = self.p.lexer.lexdata
-            line = Global.count
-            BadOperandException(message, code, line)
+        return self.varName
 
-
+# Expresion para Negación
+# -a
 class ExpressionUminus(Expression):
     
     def __init__(self, p, value):
@@ -369,7 +557,8 @@ class ExpressionUminus(Expression):
             line = Global.count
             BadOperandException(message, code, line)
 
-
+# Expresion con parentesis
+# (a + b)
 class ExpressionGroup(Expression):
     
     def __init__(self, p, value):
@@ -377,50 +566,49 @@ class ExpressionGroup(Expression):
         self.value = value
 
     def evaluate(self):
-        return self.value
+        return self.value.evaluate()
 
 
+# Expresion para obtener ID
 class ExpressionID(Expression):
 
-    def __init__(self, p, name, value):
+    def __init__(self, p, name):
         self.p = p
         self.name = name
-        self.value = None
-
-        if value is not None:
-            self.value = value
-        else:
-            message = " name '{0}' is not defined".format(self.name)
-            code = self.p.lexer.lexdata
-            line = Global.count
-            NameException(message, code, line)
+        self.value =get(name)
 
     def evaluate(self):
-        return self.value
+        # if self.value is  None:
+        #     message = " name '{0}' is not defined".format(self.name)
+        #     code = self.p.lexer.lexdata
+        #     line = Global.count
+        #     NameException(message, code, line)
+        
+        return self.name
 
 
-class Print(Expression):
-    
-    def __init__(self, p, value):
-        self.p = p
-        self.value = value
+# class Print(Expression):
+#     def __init__(self, p, value):
+#         self.p = p
+#         self.value = value
+#
+#     def evaluate(self):
+#
+#         print(self.value.evaluate(), end='')
+#
+#
+# class Println(Expression):
+#   
+#     def __init__(self, p, value):
+#         self.p = p
+#         self.value = value
+#
+#     def evaluate(self):
+#
+#         print(self.value.evaluate())
 
-    def evaluate(self):
 
-        print(self.value.evaluate(), end='')
-
-
-class Println(Expression):
-    
-    def __init__(self, p, value):
-        self.p = p
-        self.value = value
-
-    def evaluate(self):
-
-        print(self.value.evaluate())
-
-
+# Expresion para Errores de Sintaxis
 class ErrorNotMatch(Expression):
 
     def __init__(self, p):
