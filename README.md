@@ -23,3 +23,6 @@ Jorge Eduardo Ortiz Trivino
 * **Camilo Ernesto Vargas Romero** \<camevargasrom@unal.edu.co\>
 * **Luis Miguel Baez Aponte** \<lmbaeza@unal.edu.co\>
 
+### Diagrama de clases Emulador
+
+![Diagrama de clases UML - Emulador JVN](https://i.ibb.co/8K7qVfz/Diagrama-UML-Emulador.png)
