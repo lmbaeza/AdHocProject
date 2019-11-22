@@ -25,4 +25,4 @@ Jorge Eduardo Ortiz Trivino
 
 ### Diagrama de clases Emulador
 
-![Diagrama de clases UML - Emulador JVN](https://i.ibb.co/8K7qVfz/Diagrama-UML-Emulador.png)
+![Diagrama de clases UML - Emulador JVN](https://i.ibb.co/vdLf824/Diagrama-UML-Emulador-white.png)
