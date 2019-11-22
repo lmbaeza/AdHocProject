@@ -26,9 +26,6 @@ class Parser(object):
         # Tokens del Analizador Lexico
         self.tokens = Lexer().getToken()
 
-        # Tabla de Variables
-        self.table = {}
-
         self.precedence = (
             ('left', 'PLUS', 'MINUS'),
             ('left', 'TIMES', 'DIVIDE'),
@@ -108,11 +105,7 @@ class Parser(object):
 
     def p_statement_update_generic(self, p):
         r'''statement : ID UPDATE expression_generic SEMICOLON'''
-
-        # if self.table.get(p[1]):
-        #     self.table[p[1]] = StatementUpdate(p, p[1], self.table[p[1]], p[3])
-        # else:
-        #     self.table[p[1]] = StatementUpdate(p, p[1], None, p[3])
+        p[0] = StatementUpdate('Update', p, p[1], p[3])
 
 
     # P_EXPRESSION_BINOP
@@ -275,7 +268,7 @@ class Parser(object):
 
     def p_expression_id_string(self, p):
         r'''expression_string : ID'''
-        # p[0] = ExpressionID(p, p[1], self.table.get(p[1]))
+        # p[0] = ExpressionID(p, p[1])
 
 
     # P_EXPRESSION_COMPARISON

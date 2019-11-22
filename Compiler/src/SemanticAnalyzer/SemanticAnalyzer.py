@@ -334,7 +334,7 @@ class StatementAssign(Expression):
             val = Float(val)
         elif str(t)=="<class 'bool'>":
             val = Boolean(val)
-            # Revisar para string
+        # Revisar para string
         
 
         if isinstance(val, str):
@@ -371,36 +371,73 @@ class StatementExpr(Expression):
 
 class StatementUpdate(Expression):
     
-    def __init__(self, p,varName, oldType, value):
+    def __init__(self, typeName, p, varName, value):
+        self.typeName = typeName
         self.p = p
         self.varName = varName
         self.value = value
+        self.table = Global.table
         self.oldType = None
 
-        if oldType is not None:
-            self.oldType = oldType
-        else:
+    def evaluate(self):
+        self.oldType = self.table.get(self.varName)
+
+        if self.oldType is None:
             message = "variable '{0}' has not been declared".format(self.varName)
             code = self.p.lexer.lexdata
             line = Global.count
             UndeclaredVariable(message, code, line)
-
-
-    def evaluate(self):
-        val = self.value
-
+        
+        val = self.value.evaluate()
         code = self.p.lexer.lexdata
         line = Global.count
+        
+        
+        if isinstance(val, ExpressionID) or isinstance(val, ExpressionGroup):
+            
+            if (self.table.get(val) is None) and not (self.dataType == 'BOOLEAN' or \
+                self.table.get(val) is None) and \
+                    self.dataType != Type.check(type(self.table.get(val).evaluate())):
+                IncompatibleTypesException("Incompatible Types", code, line)
+        
+        set(self.varName, self.value)
 
-        if isinstance(self.oldType, Integer) and isinstance(self.value, Integer):
+        self.table = Global.table
+
+        t = type(val)
+
+        if str(t)=="<class 'int'>":
+            val = Integer(val)
+        elif str(t)=="<class 'float'>":
+            val = Float(val)
+        elif str(t)=="<class 'bool'>":
+            val = Boolean(val)
+        # Revisar para string
+        
+        if isinstance(self.oldType, Integer) and isinstance(val, Integer):
+            print(self.varName + ' = ' + str(val))
             return val
-        elif isinstance(self.oldType, Float) and isinstance(self.value, Float):
+        elif isinstance(self.oldType, Float) and isinstance(val, Float):
+            print(self.varName + ' = ' + str(val))
             return val
-        elif isinstance(self.oldType, Boolean) and isinstance(self.value, Boolean):
+        elif isinstance(self.oldType, Boolean) and isinstance(val, Boolean):
+            print(self.varName + ' = ' + str(val))
             return val
-        elif isinstance(self.oldType, String) and isinstance(self.value, String):
+        elif isinstance(self.oldType, String) and isinstance(val, String):
+            print(self.varName + ' = ' + str(val))
             return val
         else:
+            if isinstance(self.value, ExpressionID):
+                if str(type(self.table.get(val))) == str(type(self.oldType)):
+                    print(self.varName + ' = ' + str(val))
+                    return
+            elif isinstance(self.value, ExpressionBinop):
+                print(self.varName + ' = ' + str(val))
+                return
+            elif isinstance(self.value, ExpressionGroup):
+                print(self.varName + ' = ' + str(val))
+                return
+
             IncompatibleTypesException("Incompatible Types", code, line)
 
 
