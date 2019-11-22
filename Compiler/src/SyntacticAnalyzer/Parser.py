@@ -98,7 +98,7 @@ class Parser(object):
         r'''statement : expression_generic SEMICOLON
                     | expression_generic'''
         
-        StatementExpr(p, p[1])
+        # StatementExpr(p, p[1])
 
 
     # P_STATEMENT_UPDATE
@@ -283,7 +283,7 @@ class Parser(object):
     def p_print_all_type(self, p):
         r'''statement : PRINT LPAREN expression_generic RPAREN SEMICOLON'''
         
-        Print(p, p[3])
+        # Print(p, p[3])
 
 
     # P_PRINTLN_ALL_TYPES
@@ -291,7 +291,7 @@ class Parser(object):
     def p_println_all_type(self, p):
         r'''statement : PRINTLN LPAREN expression_generic RPAREN SEMICOLON
                         | PRINTLN LPAREN expression_generic RPAREN'''
-        Println(p, p[3])
+        # Println(p, p[3])
 
 
     # P_EMPTY

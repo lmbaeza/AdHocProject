@@ -51,13 +51,13 @@ class Type:
         elif typeName == "<class 'bool'>":
             return 'BOOLEAN'
 
-
+# Clase padre para todas las Expresiones
 class Expression(object):
     def evaluate(self):
         # Aca se implementa cada tipo de expresion.
         raise NotImplementedError
 
-
+# Expresión para los Numeros Flotantes
 class Float(Expression):
 
     def __init__(self, value):
@@ -105,7 +105,7 @@ class Float(Expression):
     def __neg__(self):
         return Float(-self.value)
 
-
+# Expresión para los Numeros Enteros
 class Integer(Expression):
     
     def __init__(self, value):
@@ -153,7 +153,7 @@ class Integer(Expression):
     def __neg__(self):
         return Integer(-self.value)
 
-
+# Expresiones Booleanas
 class Boolean(Expression):
     
     def __init__(self, value):
@@ -186,6 +186,7 @@ class Boolean(Expression):
         return Boolean(self.value != other.value)
 
 
+# Expresiones de String
 class String(Expression):
     
     def __init__(self, value):
@@ -227,6 +228,7 @@ class String(Expression):
         return Boolean(self.value != other.value)
 
 
+# Lista de Expresiones
 class StatementList(Expression):
     
     def __init__(self, value, next):
@@ -238,7 +240,12 @@ class StatementList(Expression):
             self.value.evaluate()
         return self.next
 
-
+# Expresion de la sentencia IF
+# if (comparison) {
+#     <expresion>
+#     ...........
+#     <expresion>
+# }
 class StatementIf(Expression):
 
     def __init__(self, typeName, comparison, next_):
@@ -257,7 +264,16 @@ class StatementIf(Expression):
             nextTmp = tmp
         print(':ENDIF'+str(number)+':')
 
-
+# Expresion de la sentencia IF-ELSE
+# if (comparison) {
+#     <expresion>
+#     ...........
+#     <expresion>
+# } else {
+#     <expresion>
+#     ...........
+#     <expresion>
+# }
 class StatementIfElse(Expression):
     
     def __init__(self, typeName, comparison, nextif, nextelse):
@@ -290,6 +306,10 @@ class StatementIfElse(Expression):
         print(':ENDIF_{id}:'.format(id=numberElse))
 
 
+# Expresion de Asignación
+# int x = 0;
+# double x = 0.0;
+# boolean x = true;
 class StatementAssign(Expression):
     
     def __init__(self, typeName, dataType, p,varName, value):
@@ -326,7 +346,6 @@ class StatementAssign(Expression):
 
         t = type(val)
 
-
         if str(t)=="<class 'int'>":
             val = Integer(val)
         elif str(t)=="<class 'float'>":
@@ -335,7 +354,6 @@ class StatementAssign(Expression):
             val = Boolean(val)
         # Revisar para string
         
-
         if isinstance(val, str):
             print(self.varName + ' = ' + str(val))
             return val
@@ -356,18 +374,21 @@ class StatementAssign(Expression):
 
 
 
-class StatementExpr(Expression):
-    def __init__(self, p, value):
-        self.p = p
-        self.value = value
+# class StatementExpr(Expression):
+#     def __init__(self, p, value):
+#         self.p = p
+#         self.value = value
 
-    def evaluate(self):
+#     def evaluate(self):
         
-        if isinstance(self.value, Expression):
-            print(self.value.evaluate())
+#         if isinstance(self.value, Expression):
+#             print(self.value.evaluate())
 
 
-
+# Expresion de actualización
+# x := 0;
+# x := 0.0;
+# x := true;
 class StatementUpdate(Expression):
     
     def __init__(self, typeName, p, varName, value):
@@ -432,6 +453,11 @@ class StatementUpdate(Expression):
             IncompatibleTypesException("Incompatible Types", code, line)
 
 
+# Expresion de Operacion Binaria
+# a + b
+# a - b
+# a * b
+# a / b
 class ExpressionBinop(Expression):
     
     def __init__(self,typeName,  p, varName, left, right, operator):
@@ -471,6 +497,9 @@ class ExpressionBinop(Expression):
         return self.varName
 
 
+# Expresion de Comparación para Operadores Binarios
+# a > b, a >= b
+# a < b, a <= b
 class ComparisonBinop(Expression):
     
     def __init__(self, typeName, p, varName, left, right, operator):
@@ -511,7 +540,8 @@ class ComparisonBinop(Expression):
 
         return self.varName
 
-
+# Expresion para Negación
+# -a
 class ExpressionUminus(Expression):
     
     def __init__(self, p, value):
@@ -527,7 +557,8 @@ class ExpressionUminus(Expression):
             line = Global.count
             BadOperandException(message, code, line)
 
-
+# Expresion con parentesis
+# (a + b)
 class ExpressionGroup(Expression):
     
     def __init__(self, p, value):
@@ -538,6 +569,7 @@ class ExpressionGroup(Expression):
         return self.value.evaluate()
 
 
+# Expresion para obtener ID
 class ExpressionID(Expression):
 
     def __init__(self, p, name):
@@ -555,28 +587,28 @@ class ExpressionID(Expression):
         return self.name
 
 
-class Print(Expression):
-    
-    def __init__(self, p, value):
-        self.p = p
-        self.value = value
+# class Print(Expression):
+#     def __init__(self, p, value):
+#         self.p = p
+#         self.value = value
+#
+#     def evaluate(self):
+#
+#         print(self.value.evaluate(), end='')
+#
+#
+# class Println(Expression):
+#   
+#     def __init__(self, p, value):
+#         self.p = p
+#         self.value = value
+#
+#     def evaluate(self):
+#
+#         print(self.value.evaluate())
 
-    def evaluate(self):
 
-        print(self.value.evaluate(), end='')
-
-
-class Println(Expression):
-    
-    def __init__(self, p, value):
-        self.p = p
-        self.value = value
-
-    def evaluate(self):
-
-        print(self.value.evaluate())
-
-
+# Expresion para Errores de Sintaxis
 class ErrorNotMatch(Expression):
 
     def __init__(self, p):
