@@ -313,11 +313,10 @@ class StatementAssign(Expression):
         code = self.p.lexer.lexdata
         line = Global.count
         
-        
-        if isinstance(val, ExpressionID) or isinstance(val, ExpressionGroup):
-            
-            if (self.table.get(val) is None) and not (self.dataType == 'BOOLEAN' or \
-                self.table.get(val) is None) and \
+        if isinstance(self.value, ExpressionID) or isinstance(self.value, ExpressionGroup):
+            print(self.value)
+            if (self.table.get(val) is None) or not (self.dataType == 'BOOLEAN' or \
+                self.table.get(val) is None) or \
                     self.dataType != Type.check(type(self.table.get(val).evaluate())):
                 IncompatibleTypesException("Incompatible Types", code, line)
         
@@ -391,14 +390,6 @@ class StatementUpdate(Expression):
         val = self.value.evaluate()
         code = self.p.lexer.lexdata
         line = Global.count
-        
-        
-        if isinstance(val, ExpressionID) or isinstance(val, ExpressionGroup):
-            
-            if (self.table.get(val) is None) and not (self.dataType == 'BOOLEAN' or \
-                self.table.get(val) is None) and \
-                    self.dataType != Type.check(type(self.table.get(val).evaluate())):
-                IncompatibleTypesException("Incompatible Types", code, line)
         
         set(self.varName, self.value)
 
