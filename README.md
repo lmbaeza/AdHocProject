@@ -26,3 +26,15 @@ Jorge Eduardo Ortiz Trivino
 ### Diagrama de clases Emulador
 
 ![Diagrama de clases UML - Emulador JVN](https://i.ibb.co/vdLf824/Diagrama-UML-Emulador-white.png)
+
+### Memoria RAM
+
+![Diagrama de clases UML - Memoria RAM](https://i.ibb.co/rtwtKJH/Memoria-RAM.png)
+
+### Registros
+
+![Diagrama de clases UML - Registros](https://i.ibb.co/x8CXrds/Registros.png)
+
+### CPU
+
+![Diagrama de clases UML - CPU](https://i.ibb.co/jZkXmJy/CPU.png)
