@@ -23,9 +23,9 @@ Jorge Eduardo Ortiz Trivino
 * **Camilo Ernesto Vargas Romero** \<camevargasrom@unal.edu.co\>
 * **Luis Miguel Baez Aponte** \<lmbaeza@unal.edu.co\>
 
-### Diagrama de clases Emulador
+### Diagrama de clases Emulador - Arquitectura John Von Neumann
 
-![Diagrama de clases UML - Emulador JVN](https://i.ibb.co/vdLf824/Diagrama-UML-Emulador-white.png)
+![Diagrama de clases UML - Emulador JVN](https://i.ibb.co/GpxpCQJ/Diagrama-UML-Emulador-white.png)
 
 ### Memoria RAM
 
@@ -33,7 +33,7 @@ Jorge Eduardo Ortiz Trivino
 
 ### Registros
 
-![Diagrama de clases UML - Registros](https://i.ibb.co/x8CXrds/Registros.png)
+![Diagrama de clases UML - Registros](https://i.ibb.co/Y22HP1v/Registros.png)
 
 ### CPU
 
