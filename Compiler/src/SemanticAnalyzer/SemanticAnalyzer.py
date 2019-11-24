@@ -432,17 +432,17 @@ class StatementUpdate(Expression):
         elif str(t)=="<class 'bool'>":
             val = Boolean(val)
         # Revisar para string
-        
-        if isinstance(self.oldType, Integer) and isinstance(val, Integer):
+
+        if isinstance(self.oldType, Integer) and isinstance(self.value, Integer):
             print(self.varName + ' = ' + str(val))
             return val
-        elif isinstance(self.oldType, Float) and isinstance(val, Float):
+        elif isinstance(self.oldType, Float) and isinstance(self.value, Float):
             print(self.varName + ' = ' + str(val))
             return val
-        elif isinstance(self.oldType, Boolean) and isinstance(val, Boolean):
+        elif isinstance(self.oldType, Boolean) and isinstance(self.value, Boolean):
             print(self.varName + ' = ' + str(val))
             return val
-        elif isinstance(self.oldType, String) and isinstance(val, String):
+        elif isinstance(self.oldType, String) and isinstance(self.value, String):
             print(self.varName + ' = ' + str(val))
             return val
         else:
