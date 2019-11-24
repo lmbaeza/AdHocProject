@@ -23,6 +23,30 @@ Jorge Eduardo Ortiz Trivino
 * **Camilo Ernesto Vargas Romero** \<camevargasrom@unal.edu.co\>
 * **Luis Miguel Baez Aponte** \<lmbaeza@unal.edu.co\>
 
+### Comandos de Git
+
+* Clonar branch
+
+    ```bash
+    $ git clone --single-branch --branch develop https://github.com/lmbaeza/AdHocProject.git
+    ```
+
+* Hacer un commit al branch `develop`
+
+    ```bash
+    $ git checkout develop
+    $ git status
+    $ git add modifiedFile1.py modifiedFile2.py modifiedFileN.py
+    $ git status
+    $ git commit -m "Descripción del commit"
+    $ git push -u origin develop
+    ```
+* Instalar Dependencias
+
+    ```bash
+    $ pip install -r requirements.txt
+    ```
+
 ### Diagrama de clases Emulador - Arquitectura John Von Neumann
 
 ![Diagrama de clases UML - Emulador JVN](https://i.ibb.co/GpxpCQJ/Diagrama-UML-Emulador-white.png)
