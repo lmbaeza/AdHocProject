@@ -4,7 +4,11 @@
 from ply import lex
 from ply.lex import TOKEN
 
-from Compiler.src.SemanticAnalyzer.SemanticAnalyzer import incrementCount
+# from Compiler.src.SemanticAnalyzer.SemanticAnalyzer import incrementCount
+
+from Compiler.src.SyntacticAnalyzer.Global import VariableGlobal
+
+varGlobal = VariableGlobal()
 
 class Lexer(object):
 
@@ -113,7 +117,7 @@ class Lexer(object):
     @TOKEN(r'\n+')
     def t_newline(self, t):
         t.lexer.lineno += len(t.value)
-        incrementCount(len(t.value))
+        varGlobal.incrementCount(len(t.value))
 
 
     def t_error(self, t):
