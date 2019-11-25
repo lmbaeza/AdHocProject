@@ -6,7 +6,8 @@ from ply.lex import TOKEN
 
 # from Compiler.src.SemanticAnalyzer.SemanticAnalyzer import incrementCount
 
-from Compiler.src.SyntacticAnalyzer.Global import VariableGlobal
+# from Compiler.src.SyntacticAnalyzer.Global import VariableGlobal
+from Compiler.src.utils.Global import VariableGlobal
 
 varGlobal = VariableGlobal()
 
