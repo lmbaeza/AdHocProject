@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from Compiler.src.SyntacticAnalyzer.Parser import Parser
-from Compiler.src.SyntacticAnalyzer.Global import IntermediateRepresentation
+from Compiler.src.utils.Global import IntermediateRepresentation
 
 parser = Parser()
 

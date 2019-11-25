@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from Compiler.src.SyntacticAnalyzer import Global
-from Compiler.src.SyntacticAnalyzer.Global import VariableGlobal
-from Compiler.src.SyntacticAnalyzer.Global import getCode
-from Compiler.src.SyntacticAnalyzer.Global import IntermediateRepresentation
+from Compiler.src.utils import Global
+from Compiler.src.utils.Global import VariableGlobal
+from Compiler.src.utils.Global import getCode
+from Compiler.src.utils.Global import IntermediateRepresentation
 from Compiler.src.Exceptions.Exceptions import *
 
 
