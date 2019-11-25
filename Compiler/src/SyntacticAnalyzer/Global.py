@@ -70,10 +70,7 @@ class VariableGlobal:
     
     def getT(self):
         return self.instance.table
+    
+    def getCount(self):
+        return self.instance.count
 
-
-count = 1
-table = {}
-variableCounter = 0
-labelCounter = 0
-comparisonCounter = 0

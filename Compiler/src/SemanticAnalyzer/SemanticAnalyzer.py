@@ -8,28 +8,6 @@ from Compiler.src.Exceptions.Exceptions import *
 
 varGlobal = VariableGlobal()
 
-# def incrementCount(number):
-#     Global.count += number
-
-# def incrementVariableCounter():
-#     Global.variableCounter += 1
-#     return Global.variableCounter
-
-# def incrementLabelCounter():
-#     Global.labelCounter += 1
-#     return Global.labelCounter
-
-# def incrementComparisonCounter():
-#     Global.comparisonCounter += 1
-#     return Global.comparisonCounter
-
-# def set(key, value):
-#     Global.table[key] = value
-
-# def get(key):
-#     return Global.table.get(key)
-
-
 class Type:
     # Variables Estaticas
     TYPE_INT = "<class 'int'>"
@@ -330,12 +308,12 @@ class StatementAssign(Expression):
         if self.table.get(self.varName) is not None:
             message = "variable '{0}' is already defined".format(self.varName)
             code = self.p.lexer.lexdata
-            line = Global.count
+            line = varGlobal.getCount()
             VariableAlreadyDeclared(message, code, line)
 
         val = self.value.evaluate()
         code = self.p.lexer.lexdata
-        line = Global.count
+        line = varGlobal.getCount()
         
         if isinstance(self.value, ExpressionID):
         
@@ -412,12 +390,12 @@ class StatementUpdate(Expression):
         if self.oldType is None:
             message = "variable '{0}' has not been declared".format(self.varName)
             code = self.p.lexer.lexdata
-            line = Global.count
+            line = varGlobal.getCount()
             UndeclaredVariable(message, code, line)
         
         val = self.value.evaluate()
         code = self.p.lexer.lexdata
-        line = Global.count
+        line = varGlobal.getCount()
         
         varGlobal.setTable(self.varName, self.value)
 
@@ -561,7 +539,7 @@ class ExpressionUminus(Expression):
         else:
             message = "bad operand types for operator '-'"
             code = self.p.lexer.lexdata
-            line = Global.count
+            line = varGlobal.getCount()
             BadOperandException(message, code, line)
 
 # Expresion con parentesis
@@ -588,7 +566,7 @@ class ExpressionID(Expression):
         # if self.value is  None:
         #     message = " name '{0}' is not defined".format(self.name)
         #     code = self.p.lexer.lexdata
-        #     line = Global.count
+        #     line = varGlobal.getCount()
         #     NameException(message, code, line)
         
         return self.name
@@ -626,11 +604,11 @@ class ErrorNotMatch(Expression):
         if self.p is not None:
             message = "Invalid Syntax at '{0}'".format(self.p.value)
             code = self.p.lexer.lexdata
-            line = Global.count
+            line = varGlobal.getCount()
             SyntaxErrorException(message, code, line)
         else:
             message = "Invalid Syntax"
             code = ''
-            line = Global.count
+            line = varGlobal.getCount()
             SyntaxErrorException(message, code, line)
 

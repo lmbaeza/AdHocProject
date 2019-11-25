@@ -10,7 +10,6 @@ from Compiler.src.LexicalAnalyzer.Scanner import Lexer
 
 from Compiler.src.SemanticAnalyzer.SemanticAnalyzer import *
 from Compiler.src.Exceptions.Exceptions import *
-import random
 
 class PythonDataType:
     # Variables Estaticas
