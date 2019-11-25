@@ -327,5 +327,5 @@ class Parser(object):
             self.parser.parse(s)
 
 
-    def test(self, code):
+    def run(self, code):
         self.parser.parse(code)
