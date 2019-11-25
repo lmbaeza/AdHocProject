@@ -2,11 +2,12 @@
 # -*- coding: utf-8 -*-
 
 from Compiler.src.SyntacticAnalyzer.Parser import Parser
+from Compiler.src.SyntacticAnalyzer.Global import IntermediateRepresentation
 
 parser = Parser()
-
-# parser.shell()
 
 with open('code.apl', 'r') as file:
     parser.test(file.read())
 
+ir = IntermediateRepresentation()
+ir.saveFile()
