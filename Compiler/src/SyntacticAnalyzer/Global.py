@@ -105,7 +105,10 @@ class IntermediateRepresentation:
     def __str__(self):
         return str(self.instance)
     
-    def setCode(self, codestr):
+    def setCode(self, codestr, debug=False):
+        if debug:
+            print(codestr)
+        
         self.instance.setCode(codestr)
         
     def getCode(self):

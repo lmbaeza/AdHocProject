@@ -244,19 +244,15 @@ class StatementIf(Expression):
     def evaluate(self):
         number = varGlobal.incrementLabelCounter()
         comp = self.comparison.evaluate()
-        if debug:
-            print('IFNOT {comp} GOTO :ENDIF'.format(comp=comp)+str(number)+':')
         
-        ir.setCode('IFNOT {comp} GOTO :ENDIF'.format(comp=comp)+str(number)+':')
+        ir.setCode('IFNOT {comp} GOTO :ENDIF'.format(comp=comp)+str(number)+':', debug)
         nextTmp = self.next
 
         while nextTmp is not None:
             tmp = nextTmp.evaluate()
             nextTmp = tmp
         
-        if debug:
-            print(':ENDIF'+str(number)+':')
-        ir.setCode(':ENDIF'+str(number)+':')
+        ir.setCode(':ENDIF'+str(number)+':', debug)
 
 # Expresion de la sentencia IF-ELSE
 # if (comparison) {
@@ -279,10 +275,8 @@ class StatementIfElse(Expression):
     def evaluate(self):
         number = varGlobal.incrementLabelCounter()
         comp = self.comparison.evaluate()
-        if debug:
-            print('IFNOT {comp} GOTO :ELSE_'.format(comp=comp)+str(number)+':')
-        
-        ir.setCode('IFNOT {comp} GOTO :ELSE_'.format(comp=comp)+str(number)+':')
+
+        ir.setCode('IFNOT {comp} GOTO :ELSE_'.format(comp=comp)+str(number)+':', debug)
         nextTmp = self.nextIf
 
         while nextTmp is not None:
@@ -291,12 +285,8 @@ class StatementIfElse(Expression):
         
         numberElse = varGlobal.incrementLabelCounter()
 
-        if debug:
-            print('GOTO :ENDIF_{id}:'.format(id=numberElse))
-            print(':ELSE_'+str(number)+':')
-        
-        ir.setCode('GOTO :ENDIF_{id}:'.format(id=numberElse))
-        ir.setCode(':ELSE_'+str(number)+':')
+        ir.setCode('GOTO :ENDIF_{id}:'.format(id=numberElse), debug)
+        ir.setCode(':ELSE_'+str(number)+':', debug)
         
         nextTmp = self.nextElse
 
@@ -304,10 +294,7 @@ class StatementIfElse(Expression):
             tmp = nextTmp.evaluate()
             nextTmp = tmp
         
-        if debug:
-            print(':ENDIF_{id}:'.format(id=numberElse))
-        
-        ir.setCode(':ENDIF_{id}:'.format(id=numberElse))
+        ir.setCode(':ENDIF_{id}:'.format(id=numberElse), debug)
 
 
 # Expresion de Asignación
@@ -360,30 +347,20 @@ class StatementAssign(Expression):
         # Revisar para string
         
         if isinstance(val, str):
-            if debug:
-                print(self.varName + ' = ' + str(val))
-            ir.setCode(self.varName + ' = ' + str(val))
+            ir.setCode(self.varName + ' = ' + str(val), debug)
             return val
         elif self.dataType==Type.INT and isinstance(val, Integer):
-            if debug:
-                print(self.varName + ' = ' + str(val))
-            ir.setCode(self.varName + ' = ' + str(val))
+            ir.setCode(self.varName + ' = ' + str(val), debug)
             return val
         elif self.dataType==Type.DOUBLE and isinstance(val, Float):
-            if debug:
-                print(self.varName + ' = ' + str(val))
-            ir.setCode(self.varName + ' = ' + str(val))
+            ir.setCode(self.varName + ' = ' + str(val), debug)
             return val
         elif self.dataType==Type.BOOLEAN and isinstance(val, Boolean):
-            if debug:
-                print(self.varName + ' = ' + str(val))
-            ir.setCode(self.varName + ' = ' + str(val))
+            ir.setCode(self.varName + ' = ' + str(val), debug)
 
             return val
         elif self.dataType==Type.STRING and isinstance(val, String):
-            if debug:
-                print(self.varName + ' = ' + str(val))
-            ir.setCode(self.varName + ' = ' + str(val))
+            ir.setCode(self.varName + ' = ' + str(val), debug)
             return val
         else:
             IncompatibleTypesException("Incompatible Types", self.code, self.line)
@@ -443,41 +420,27 @@ class StatementUpdate(Expression):
         # Revisar para string
 
         if isinstance(self.oldType, Integer) and isinstance(self.value, Integer):
-            if debug:
-                print(self.varName + ' = ' + str(val))
-            ir.setCode(self.varName + ' = ' + str(val))
+            ir.setCode(self.varName + ' = ' + str(val), debug)
             return val
         elif isinstance(self.oldType, Float) and isinstance(self.value, Float):
-            if debug:
-                print(self.varName + ' = ' + str(val))
-            ir.setCode(self.varName + ' = ' + str(val))
+            ir.setCode(self.varName + ' = ' + str(val), debug)
             return val
         elif isinstance(self.oldType, Boolean) and isinstance(self.value, Boolean):
-            if debug:
-                print(self.varName + ' = ' + str(val))
-            ir.setCode(self.varName + ' = ' + str(val))
+            ir.setCode(self.varName + ' = ' + str(val), debug)
             return val
         elif isinstance(self.oldType, String) and isinstance(self.value, String):
-            if debug:
-                print(self.varName + ' = ' + str(val))
-            ir.setCode(self.varName + ' = ' + str(val))
+            ir.setCode(self.varName + ' = ' + str(val), debug)
             return val
         else:
             if isinstance(self.value, ExpressionID):
                 if str(type(self.table.get(val))) == str(type(self.oldType)):
-                    if debug:
-                        print(self.varName + ' = ' + str(val))
-                    ir.setCode(self.varName + ' = ' + str(val))
+                    ir.setCode(self.varName + ' = ' + str(val), debug)
                     return
             elif isinstance(self.value, ExpressionBinop):
-                if debug:
-                    print(self.varName + ' = ' + str(val))
-                ir.setCode(self.varName + ' = ' + str(val))
+                ir.setCode(self.varName + ' = ' + str(val), debug)
                 return
             elif isinstance(self.value, ExpressionGroup):
-                if debug:
-                    print(self.varName + ' = ' + str(val))
-                ir.setCode(self.varName + ' = ' + str(val))
+                ir.setCode(self.varName + ' = ' + str(val), debug)
                 return
 
             IncompatibleTypesException("Incompatible Types", self.code, self.line)
@@ -517,20 +480,12 @@ class ExpressionBinop(Expression):
         if isinstance(self.right, ExpressionID):
             self.right = self.right.evaluate()
 
-        if debug:
-            print('{x} = {y} {op} {z}'.format(
-                x=self.varName,
-                y=self.left,
-                op=self.operator,
-                z=self.right
-            ))
-        
         ir.setCode('{x} = {y} {op} {z}'.format(
             x=self.varName,
             y=self.left,
             op=self.operator,
             z=self.right
-        ))
+        ), debug)
 
         
         return self.varName
@@ -570,20 +525,12 @@ class ComparisonBinop(Expression):
         if isinstance(self.right, ExpressionID):
             self.right = self.right.evaluate()
         
-        if debug:
-            print('{x} = {y} {op} {z}'.format(
-                x=self.varName,
-                y=self.left,
-                op=self.operator,
-                z=self.right
-            ))
-        
         ir.setCode('{x} = {y} {op} {z}'.format(
             x=self.varName,
             y=self.left,
             op=self.operator,
             z=self.right
-        ))
+        ), debug)
 
         return self.varName
 
