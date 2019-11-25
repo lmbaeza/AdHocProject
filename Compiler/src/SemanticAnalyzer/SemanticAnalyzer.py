@@ -8,6 +8,10 @@ from Compiler.src.Exceptions.Exceptions import *
 
 varGlobal = VariableGlobal()
 
+
+def getCode(p):
+    return '~ '+p.lexer.lexdata.split('\n')[p.slice[1].lineno-1]
+
 class Type:
     # Variables Estaticas
     TYPE_INT = "<class 'int'>"
@@ -300,29 +304,26 @@ class StatementAssign(Expression):
         self.varName = varName
         self.value = value
         self.table = varGlobal.getT()
-        
+        self.code = getCode(p)
+        self.line = p.slice[1].lineno
         
 
     def evaluate(self):
 
         if self.table.get(self.varName) is not None:
             message = "variable '{0}' is already defined".format(self.varName)
-            code = self.p.lexer.lexdata
-            line = varGlobal.getCount()
-            VariableAlreadyDeclared(message, code, line)
+            VariableAlreadyDeclared(message, self.code, self.line)
 
         val = self.value.evaluate()
-        code = self.p.lexer.lexdata
-        line = varGlobal.getCount()
         
         if isinstance(self.value, ExpressionID):
         
             if self.dataType == 'BOOLEAN':
                 if not self.table.get(val):
-                    IncompatibleTypesException("Incompatible Types", code, line)
+                    IncompatibleTypesException("Incompatible Types", self.code, self.line)
             elif (self.table.get(val) is None) or \
                     self.dataType != Type.check(type(self.table.get(val).evaluate())):
-                IncompatibleTypesException("Incompatible Types", code, line)
+                IncompatibleTypesException("Incompatible Types", self.code, self.line)
         
         varGlobal.setTable(self.varName, self.value)
 
@@ -355,7 +356,7 @@ class StatementAssign(Expression):
             print(self.varName + ' = ' + str(val))
             return val
         else:
-            IncompatibleTypesException("Incompatible Types", code, line)
+            IncompatibleTypesException("Incompatible Types", self.code, self.line)
 
 
 
@@ -383,19 +384,19 @@ class StatementUpdate(Expression):
         self.value = value
         self.table = varGlobal.getT()
         self.oldType = None
+        self.code = getCode(p)
+        self.line = p.slice[1].lineno
 
     def evaluate(self):
         self.oldType = self.table.get(self.varName)
 
+        
+
         if self.oldType is None:
             message = "variable '{0}' has not been declared".format(self.varName)
-            code = self.p.lexer.lexdata
-            line = varGlobal.getCount()
-            UndeclaredVariable(message, code, line)
+            UndeclaredVariable(message, self.code, self.line)
         
         val = self.value.evaluate()
-        code = self.p.lexer.lexdata
-        line = varGlobal.getCount()
         
         varGlobal.setTable(self.varName, self.value)
 
@@ -435,7 +436,7 @@ class StatementUpdate(Expression):
                 print(self.varName + ' = ' + str(val))
                 return
 
-            IncompatibleTypesException("Incompatible Types", code, line)
+            IncompatibleTypesException("Incompatible Types", self.code, self.line)
 
 
 # Expresion de Operacion Binaria
@@ -532,15 +533,15 @@ class ExpressionUminus(Expression):
     def __init__(self, p, value):
         self.p = p
         self.value = value
+        self.code = getCode(p)
+        self.line = p.slice[1].lineno
 
     def evaluate(self):
         if isinstance(self.value, Integer) or isinstance(self.value, Float):
             return -self.value;
         else:
             message = "bad operand types for operator '-'"
-            code = self.p.lexer.lexdata
-            line = varGlobal.getCount()
-            BadOperandException(message, code, line)
+            BadOperandException(message, self.code, self.line)
 
 # Expresion con parentesis
 # (a + b)
@@ -561,13 +562,14 @@ class ExpressionID(Expression):
         self.p = p
         self.name = name
         self.value = varGlobal.getTable(name)
+        self.code = getCode(p)
+        self.line = p.slice[1].lineno
 
     def evaluate(self):
         # if self.value is  None:
         #     message = " name '{0}' is not defined".format(self.name)
-        #     code = self.p.lexer.lexdata
         #     line = varGlobal.getCount()
-        #     NameException(message, code, line)
+        #     NameException(message, self.code, self.line)
         
         return self.name
 
@@ -598,17 +600,16 @@ class ErrorNotMatch(Expression):
 
     def __init__(self, p):
         self.p = p
+        self.code = getCode(p)
+        self.line = p.slice[1].lineno
 
     def evaluate(self):
         
         if self.p is not None:
             message = "Invalid Syntax at '{0}'".format(self.p.value)
-            code = self.p.lexer.lexdata
-            line = varGlobal.getCount()
-            SyntaxErrorException(message, code, line)
+            SyntaxErrorException(message, self.code, self.line)
         else:
             message = "Invalid Syntax"
             code = ''
-            line = varGlobal.getCount()
-            SyntaxErrorException(message, code, line)
+            SyntaxErrorException(message, code, self.line)
 
