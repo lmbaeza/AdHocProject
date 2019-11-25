@@ -74,6 +74,7 @@ class Parser(object):
 
     def p_statement_assign_integer(self, p):
         r'''statement : INT ID EQUALS expression_integer SEMICOLON'''
+
         p[0] = StatementAssign('assign', 'INT', p, p[2], p[4])
 
 
@@ -190,28 +191,34 @@ class Parser(object):
 
     def p_expression_group_generic(self, p):
         '''expression_generic : LPAREN expression_generic RPAREN'''
-        p[0] = ExpressionGroup(p, p[2])
+        # p[0] = ExpressionGroup(p, p[2])
+        p[0] = p[2]
 
 
     def p_expression_group_integer(self, p):
         '''expression_integer : LPAREN expression_integer RPAREN'''
-        p[0] = ExpressionGroup(p, p[2])
+        # p[0] = ExpressionGroup(p, p[2])
+        p[0] = p[2]
 
 
     def p_expression_group_float(self, p):
         r'''expression_float : LPAREN expression_float RPAREN'''
-        p[0] = ExpressionGroup(p, p[2])
+        
+        # p[0] = ExpressionGroup(p, p[2])
+        p[0] = p[2]
 
 
     def p_expression_group_boolean(self, p):
         r'''expression_boolean : LPAREN expression_boolean RPAREN'''
         
-        p[0] = ExpressionGroup(p, p[2])
+        # p[0] = ExpressionGroup(p, p[2])
+        p[0] = p[2]
 
 
     def p_expression_group_string(self, p):
         r'''expression_string : LPAREN expression_string RPAREN'''
         # p[0] = ExpressionGroup(p, p[2])
+        # p[0] = p[2]
 
 
     # P_EXPRESSION

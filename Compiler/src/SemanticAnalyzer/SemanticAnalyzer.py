@@ -2,29 +2,32 @@
 # -*- coding: utf-8 -*-
 
 from Compiler.src.SyntacticAnalyzer import Global
+from Compiler.src.SyntacticAnalyzer.Global import VariableGlobal
 from Compiler.src.Exceptions.Exceptions import *
 
 
-def incrementCount(number):
-    Global.count += number
+varGlobal = VariableGlobal()
 
-def incrementVariableCounter():
-    Global.variableCounter += 1
-    return Global.variableCounter
+# def incrementCount(number):
+#     Global.count += number
 
-def incrementLabelCounter():
-    Global.labelCounter += 1
-    return Global.labelCounter
+# def incrementVariableCounter():
+#     Global.variableCounter += 1
+#     return Global.variableCounter
 
-def incrementComparisonCounter():
-    Global.comparisonCounter += 1
-    return Global.comparisonCounter
+# def incrementLabelCounter():
+#     Global.labelCounter += 1
+#     return Global.labelCounter
 
-def set(key, value):
-    Global.table[key] = value
+# def incrementComparisonCounter():
+#     Global.comparisonCounter += 1
+#     return Global.comparisonCounter
 
-def get(key):
-    return Global.table.get(key)
+# def set(key, value):
+#     Global.table[key] = value
+
+# def get(key):
+#     return Global.table.get(key)
 
 
 class Type:
@@ -254,7 +257,7 @@ class StatementIf(Expression):
         self.next = next_
 
     def evaluate(self):
-        number = incrementLabelCounter()
+        number = varGlobal.incrementLabelCounter()
         comp = self.comparison.evaluate()
         print('IFNOT {comp} GOTO :ENDIF'.format(comp=comp)+str(number)+':')
         nextTmp = self.next
@@ -283,7 +286,7 @@ class StatementIfElse(Expression):
         self.nextElse = nextelse
 
     def evaluate(self):
-        number = incrementLabelCounter()
+        number = varGlobal.incrementLabelCounter()
         comp = self.comparison.evaluate()
         print('IFNOT {comp} GOTO :ELSE_'.format(comp=comp)+str(number)+':')
         nextTmp = self.nextIf
@@ -292,7 +295,7 @@ class StatementIfElse(Expression):
             tmp = nextTmp.evaluate()
             nextTmp = tmp
         
-        numberElse = incrementLabelCounter()
+        numberElse = varGlobal.incrementLabelCounter()
         print('GOTO :ENDIF_{id}:'.format(id=numberElse))
 
         print(':ELSE_'+str(number)+':')
@@ -318,7 +321,8 @@ class StatementAssign(Expression):
         self.p = p
         self.varName = varName
         self.value = value
-        self.table = Global.table
+        self.table = varGlobal.getT()
+        
         
 
     def evaluate(self):
@@ -333,18 +337,21 @@ class StatementAssign(Expression):
         code = self.p.lexer.lexdata
         line = Global.count
         
-        if isinstance(self.value, ExpressionID) or isinstance(self.value, ExpressionGroup):
-            print(self.value)
-            if (self.table.get(val) is None) or not (self.dataType == 'BOOLEAN' or \
-                self.table.get(val) is None) or \
+        if isinstance(self.value, ExpressionID):
+        
+            if self.dataType == 'BOOLEAN':
+                if not self.table.get(val):
+                    IncompatibleTypesException("Incompatible Types", code, line)
+            elif (self.table.get(val) is None) or \
                     self.dataType != Type.check(type(self.table.get(val).evaluate())):
                 IncompatibleTypesException("Incompatible Types", code, line)
         
-        set(self.varName, self.value)
+        varGlobal.setTable(self.varName, self.value)
 
-        self.table = Global.table
+        self.table = varGlobal.getT()
 
         t = type(val)
+
 
         if str(t)=="<class 'int'>":
             val = Integer(val)
@@ -396,7 +403,7 @@ class StatementUpdate(Expression):
         self.p = p
         self.varName = varName
         self.value = value
-        self.table = Global.table
+        self.table = varGlobal.getT()
         self.oldType = None
 
     def evaluate(self):
@@ -412,9 +419,9 @@ class StatementUpdate(Expression):
         code = self.p.lexer.lexdata
         line = Global.count
         
-        set(self.varName, self.value)
+        varGlobal.setTable(self.varName, self.value)
 
-        self.table = Global.table
+        self.table = varGlobal.getT()
 
         t = type(val)
 
@@ -425,17 +432,17 @@ class StatementUpdate(Expression):
         elif str(t)=="<class 'bool'>":
             val = Boolean(val)
         # Revisar para string
-        
-        if isinstance(self.oldType, Integer) and isinstance(val, Integer):
+
+        if isinstance(self.oldType, Integer) and isinstance(self.value, Integer):
             print(self.varName + ' = ' + str(val))
             return val
-        elif isinstance(self.oldType, Float) and isinstance(val, Float):
+        elif isinstance(self.oldType, Float) and isinstance(self.value, Float):
             print(self.varName + ' = ' + str(val))
             return val
-        elif isinstance(self.oldType, Boolean) and isinstance(val, Boolean):
+        elif isinstance(self.oldType, Boolean) and isinstance(self.value, Boolean):
             print(self.varName + ' = ' + str(val))
             return val
-        elif isinstance(self.oldType, String) and isinstance(val, String):
+        elif isinstance(self.oldType, String) and isinstance(self.value, String):
             print(self.varName + ' = ' + str(val))
             return val
         else:
@@ -463,7 +470,7 @@ class ExpressionBinop(Expression):
     def __init__(self,typeName,  p, varName, left, right, operator):
         self.typeName = typeName
         self.p = p
-        self.varName = varName + str(incrementVariableCounter())
+        self.varName = varName + str(varGlobal.incrementVariableCounter())
         self.left = left
         self.right = right
         self.operator = operator
@@ -505,11 +512,11 @@ class ComparisonBinop(Expression):
     def __init__(self, typeName, p, varName, left, right, operator):
         self.typeName = typeName
         self.p = p
-        self.varName = varName + str(incrementComparisonCounter())
+        self.varName = varName + str(varGlobal.incrementComparisonCounter())
         self.left = left
         self.right = right
         self.operator = operator
-        self.table = Global.table
+        self.table = varGlobal.getT()
 
     def evaluate(self):
 
@@ -575,7 +582,7 @@ class ExpressionID(Expression):
     def __init__(self, p, name):
         self.p = p
         self.name = name
-        self.value =get(name)
+        self.value = varGlobal.getTable(name)
 
     def evaluate(self):
         # if self.value is  None:
