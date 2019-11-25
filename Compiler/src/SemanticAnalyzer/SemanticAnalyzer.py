@@ -22,11 +22,13 @@ class Type:
     TYPE_STR = "<class 'str'>"
     TYPE_BOOL = "<class 'bool'>"
     
+    # Tokens de tipo de datos
     INT = 'INT'
     DOUBLE = 'DOUBLE'
     BOOLEAN = 'BOOLEAN'
     STRING = 'STRING'
 
+    # desde el tipo de dato de python a Token
     @staticmethod
     def check(typeName):
         typeName = str(typeName)

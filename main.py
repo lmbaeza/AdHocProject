@@ -7,7 +7,8 @@ from Compiler.src.utils.Global import IntermediateRepresentation
 parser = Parser()
 
 with open('code.apl', 'r') as file:
-    parser.test(file.read())
+    parser.run(file.read())
 
 ir = IntermediateRepresentation()
 ir.saveFile()
+
