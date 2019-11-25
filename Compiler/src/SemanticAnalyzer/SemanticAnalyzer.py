@@ -3,14 +3,12 @@
 
 from Compiler.src.SyntacticAnalyzer import Global
 from Compiler.src.SyntacticAnalyzer.Global import VariableGlobal
+from Compiler.src.SyntacticAnalyzer.Global import getCode
 from Compiler.src.Exceptions.Exceptions import *
 
 
 varGlobal = VariableGlobal()
 
-
-def getCode(p):
-    return '~ '+p.lexer.lexdata.split('\n')[p.slice[1].lineno-1]
 
 class Type:
     # Variables Estaticas

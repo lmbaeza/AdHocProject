@@ -74,3 +74,6 @@ class VariableGlobal:
     def getCount(self):
         return self.instance.count
 
+def getCode(parser):
+    return '~ '+parser.lexer.lexdata.split('\n')[parser.slice[1].lineno-1]
+
