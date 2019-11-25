@@ -4,9 +4,7 @@
 from ply import lex
 from ply.lex import TOKEN
 
-# from Compiler.src.SemanticAnalyzer.SemanticAnalyzer import incrementCount
-
-from Compiler.src.SyntacticAnalyzer.Global import VariableGlobal
+from Compiler.src.utils.Global import VariableGlobal
 
 varGlobal = VariableGlobal()
 
@@ -49,6 +47,7 @@ class Lexer(object):
 
     def __init__(self, *args, **kwargs):
 
+        # Tokens
         self.tokens = [
             'ID','INTEGER', 'FLOAT', 'BOOL', 'STRING_CHAIN',
             'PLUS','MINUS','TIMES','DIVIDE','EQUALS',
@@ -57,6 +56,7 @@ class Lexer(object):
             'LCURLY_BRACKET', 'RCURLY_BRACKET'
         ]
 
+         # Reserved Keywords
         self.keywordws = {
             'int': 'INT',
             'double' : 'DOUBLE',
@@ -69,7 +69,7 @@ class Lexer(object):
             'fn': 'FN',
             'main': 'MAIN'
         }
-
+    
         self.tokens +=  list([v for k, v in self.keywordws.items()])
 
         self.lexer = lex.lex(module=self, **kwargs)

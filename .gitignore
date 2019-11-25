@@ -107,7 +107,12 @@ venv.bak/
 .idea/
 *.apl
 
+# Test File
 testing.py
 
+# Files Generator by ply
 parsetab.py
 parser.out
+
+# Intermediate Representation
+*.ir
