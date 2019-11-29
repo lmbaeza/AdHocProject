@@ -50,9 +50,9 @@ class Parser(object):
     # P_STATEMENT_FN_MAIN
 
     def p_statement_fn_main(self, p):
-        r'''statement : FN MAIN LPAREN RPAREN LCURLY_BRACKET statements-list RCURLY_BRACKET'''
+        r'''statement : FN VOID MAIN LPAREN RPAREN LCURLY_BRACKET statements-list RCURLY_BRACKET'''
 
-        next = p[6]
+        next = p[7]
 
         while next is not None:
             tmp = next.evaluate()

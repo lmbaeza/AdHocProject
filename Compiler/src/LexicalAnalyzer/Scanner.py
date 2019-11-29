@@ -29,6 +29,7 @@ class Lexer(object):
     t_PRINTLN = r'(println)'
     t_FN      = r'(fn)'
     t_MAIN    = r'(main)'
+    t_VOID    = r'(void)'
 
     # Expresiones regulares para comparadores
     t_EQUAL    = r'\=\='
@@ -62,6 +63,7 @@ class Lexer(object):
             'double' : 'DOUBLE',
             'boolean': 'BOOLEAN',
             'string':'STRING',
+            'void': 'VOID',
             'print': 'PRINT',
             'println': 'PRINTLN',
             'if': 'IF',
