@@ -105,7 +105,6 @@ venv.bak/
 
 # VS Code
 .idea/
-*.apl
 
 # Test File
 testing.py

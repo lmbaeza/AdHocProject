@@ -13,7 +13,7 @@ varGlobal = VariableGlobal()
 ir = IntermediateRepresentation()
 
 # si debug es True, muestra la generación de codigo intermedio en la terminal
-debug = False
+debug = True
 
 class Type:
     # Variables Estaticas
@@ -610,8 +610,8 @@ class ErrorNotMatch(Expression):
 
     def __init__(self, p):
         self.p = p
-        self.code = getCode(p)
-        self.line = p.slice[1].lineno
+        self.code = 'Error:'
+        self.line = 0
 
     def evaluate(self):
         
