@@ -44,7 +44,7 @@ class Type:
 # Clase padre para todas las Expresiones
 class Expression(object):
     def evaluate(self):
-        # Aca se implementa cada tipo de expresion.
+        # Acá se implementa cada tipo de expresion.
         raise NotImplementedError
 
 # Expresión para los Numeros Flotantes
@@ -298,6 +298,31 @@ class StatementIfElse(Expression):
         
         ir.setCode(':ENDIF_{id}:'.format(id=numberElse), debug)
 
+#Expresión de while
+# while(expresion){
+#   <expresion>
+#   ...........
+#   <expresion> 
+# }
+class StatementWhile(Expression):
+    def __init__(self, typeName, comparison, nextIteration):
+        self.type = typeName
+        self.comparison = comparison
+        self.nextIteration = nextIteration
+        
+
+    def evaluate(self):
+        numberWhile = varGlobal.incrementLabelCounter()
+        comp = self.comparison.evaluate()
+
+        ir.setCode('IFNOT {comp} GOTO :ENDWHILE_'.format(comp=comp)+str(numberWhile)+':', debug)
+        nextTmp = self.nextIteration
+
+        while nextTmp is not None:
+            tmp = nextTmp.evaluate()
+            nextTmp = tmp
+        
+        ir.setCode(':ENDWHILE_'+str(numberWhile)+':', debug)
 
 # Expresion de Asignación
 # int x = 0;

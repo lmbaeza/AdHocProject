@@ -73,6 +73,12 @@ class Parser(object):
     def p_statement_if_else(self, p):
         r'''statement : IF LPAREN expression_generic RPAREN LCURLY_BRACKET statements-list RCURLY_BRACKET ELSE LCURLY_BRACKET statements-list RCURLY_BRACKET'''
         p[0] = StatementIfElse('IfElse', p[3], p[6], p[10])
+
+    #P_STATEMENT_WHILE: Se establece la forma en que es definido un while en el lenguaje
+    # while(expression_generic){Lista de sentencias}
+    def p_statement_while(self, p):
+        r'''statement : WHILE LPAREN expression_generic RPAREN LCURLY_BRACKET statements-list RCURLY_BRACKET'''
+        p[0] = StatementWhile('While', p[3], p[6])
     
     # P_STATEMENT_ASSIGN_*: Se establece la fomra en que es definida una asignación en el lenguaje
     # para enteros|flotantes|booleanos|cadenas
