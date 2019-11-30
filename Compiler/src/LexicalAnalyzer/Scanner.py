@@ -10,6 +10,7 @@ varGlobal = VariableGlobal()
 
 class Lexer(object):
 
+    # Expresiones regulares para tokens simples
     t_PLUS    = r'\+'
     t_MINUS   = r'-'
     t_TIMES   = r'\*'
@@ -19,6 +20,8 @@ class Lexer(object):
     t_LPAREN  = r'\('
     t_RPAREN  = r'\)'
     t_SEMICOLON = r';'
+    t_LCURLY_BRACKET = r'\{'
+    t_RCURLY_BRACKET = r'\}'
 
     # Expresiones regulares para palabras reservadas
     t_DOUBLE  = r'(double)'
@@ -39,8 +42,7 @@ class Lexer(object):
     t_SMALL    = r'\<'
     t_SMALL_EQ = r'\<\='
 
-    t_LCURLY_BRACKET = r'\{'
-    t_RCURLY_BRACKET = r'\}'
+    
 
     # Ignorar Caracteres
     t_ignore = ' \t'
@@ -76,13 +78,14 @@ class Lexer(object):
 
         self.lexer = lex.lex(module=self, **kwargs)
 
+    # Regla de expresión regular para flotantes, que el asigna el valor del flotante al token
     @TOKEN(r'[-+]?[0-9]+\.[0-9]+')
     def t_FLOAT(self, t):
         # [-+]?[0-9]+(\.[0-9]+)([eE][-+]?[0-9]+)?
         t.value = float(t.value)
         return t
 
-
+    # Regla de expresión regular para enteros, que el asigna el valor del entero al token, así como un manejo de error para entradas muy grandes
     @TOKEN(r'\d+')
     def t_INTEGER(self, t):
         
@@ -93,35 +96,33 @@ class Lexer(object):
             t.value = 0
         return t
 
-    
+    # Regla de expresión regular para booleanos.
     @TOKEN(r'(true)|(false)')
     def t_BOOL(self, t):
-        
         return t
 
+    # Reglas de expresión regular para strings.
     # https://stackoverflow.com/questions/12067592/flex-python-ply-regex-for-strings
 
     @TOKEN(r'("[^"]*")|(\'[^\']*\')')
     def t_STRING_CHAIN(self, t):
         return t
 
-
+    # Regla de epresión regular para identificadores, que le asigna el string del identificador al token en mayúsculas.
     @TOKEN(r'[a-zA-Z_][a-zA-Z0-9_]*')
     def t_ID(self, t):
-        
-
         if t.value in self.keywordws:
             t.value = t.value.upper();
             t.type = t.value
         return t
 
-
+    # Regla de expresión regular para el salto de linea
     @TOKEN(r'\n+')
     def t_newline(self, t):
         t.lexer.lineno += len(t.value)
         varGlobal.incrementCount(len(t.value))
 
-
+    # Mensaje de error para caracteres desconocidos
     def t_error(self, t):
         print("Illegal character '%s'" % t.value[0])
         t.lexer.skip(1)
