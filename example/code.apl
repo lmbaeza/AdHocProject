@@ -10,4 +10,8 @@ fn void main() {
     } else {
         x := 150;
     }
+
+    while (x==88){
+        x:=88;
+    }
 }

@@ -33,6 +33,7 @@ class Lexer(object):
     t_FN      = r'(fn)'
     t_MAIN    = r'(main)'
     t_VOID    = r'(void)'
+    t_WHILE   = r'(while)'
 
     # Expresiones regulares para comparadores
     t_EQUAL    = r'\=\='
@@ -71,12 +72,15 @@ class Lexer(object):
             'if': 'IF',
             'else': 'ELSE',
             'fn': 'FN',
-            'main': 'MAIN'
+            'main': 'MAIN',
+            'while': 'WHILE'
         }
     
         self.tokens +=  list([v for k, v in self.keywordws.items()])
 
         self.lexer = lex.lex(module=self, **kwargs)
+
+        
 
     # Regla de expresión regular para flotantes, que el asigna el valor del flotante al token
     @TOKEN(r'[-+]?[0-9]+\.[0-9]+')
