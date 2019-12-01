@@ -247,14 +247,14 @@ class StatementIf(Expression):
         number = varGlobal.incrementLabelCounter()
         comp = self.comparison.evaluate()
         
-        ir.setCode('IFNOT {comp} GOTO :ENDIF'.format(comp=comp)+str(number)+':', debug)
+        ir.setCode('IFNOT {comp} GOTO .endif_'.format(comp=comp)+str(number)+':', debug)
         nextTmp = self.next
 
         while nextTmp is not None:
             tmp = nextTmp.evaluate()
             nextTmp = tmp
         
-        ir.setCode(':ENDIF'+str(number)+':', debug)
+        ir.setCode('.endif_'+str(number)+':', debug)
 
 # Expresion de la sentencia IF-ELSE
 # if (comparison) {
@@ -278,7 +278,7 @@ class StatementIfElse(Expression):
         number = varGlobal.incrementLabelCounter()
         comp = self.comparison.evaluate()
 
-        ir.setCode('IFNOT {comp} GOTO :ELSE_'.format(comp=comp)+str(number)+':', debug)
+        ir.setCode('IFNOT {comp} GOTO .else_'.format(comp=comp)+str(number)+':', debug)
         nextTmp = self.nextIf
 
         while nextTmp is not None:
@@ -287,8 +287,8 @@ class StatementIfElse(Expression):
         
         numberElse = varGlobal.incrementLabelCounter()
 
-        ir.setCode('GOTO :ENDIF_{id}:'.format(id=numberElse), debug)
-        ir.setCode(':ELSE_'+str(number)+':', debug)
+        ir.setCode('GOTO .endif_{id}:'.format(id=numberElse), debug)
+        ir.setCode('.else_'+str(number)+':', debug)
         
         nextTmp = self.nextElse
 
@@ -296,7 +296,7 @@ class StatementIfElse(Expression):
             tmp = nextTmp.evaluate()
             nextTmp = tmp
         
-        ir.setCode(':ENDIF_{id}:'.format(id=numberElse), debug)
+        ir.setCode('.endif_{id}:'.format(id=numberElse), debug)
 
 #Expresión de while
 # while(expresion){
@@ -314,19 +314,19 @@ class StatementWhile(Expression):
     def evaluate(self):
         numberLabel = varGlobal.incrementLabelCounter()
 
-        ir.setCode(':WHILE_{num}:'.format(num=numberLabel), debug)
+        ir.setCode('.while_{num}:'.format(num=numberLabel), debug)
         comp = self.comparison.evaluate()
 
         numberWhile = varGlobal.incrementLabelCounter()
-        ir.setCode('IFNOT {comp} GOTO :ENDWHILE_'.format(comp=comp)+str(numberWhile)+':', debug)
+        ir.setCode('IFNOT {comp} GOTO .endwhile_'.format(comp=comp)+str(numberWhile)+':', debug)
         nextTmp = self.nextIteration
 
         while nextTmp is not None:
             tmp = nextTmp.evaluate()
             nextTmp = tmp
         
-        ir.setCode('GOTO :WHILE_{num}:'.format(num=numberLabel), debug)
-        ir.setCode(':ENDWHILE_'+str(numberWhile)+':', debug)
+        ir.setCode('GOTO .while_{num}:'.format(num=numberLabel), debug)
+        ir.setCode('.while_'+str(numberWhile)+':', debug)
 
 # Expresion de Asignación
 # int x = 0;
