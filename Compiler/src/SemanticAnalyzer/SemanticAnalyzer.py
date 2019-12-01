@@ -312,9 +312,12 @@ class StatementWhile(Expression):
         
 
     def evaluate(self):
-        numberWhile = varGlobal.incrementLabelCounter()
+        numberLabel = varGlobal.incrementLabelCounter()
+
+        ir.setCode(':WHILE_{num}:'.format(num=numberLabel), debug)
         comp = self.comparison.evaluate()
 
+        numberWhile = varGlobal.incrementLabelCounter()
         ir.setCode('IFNOT {comp} GOTO :ENDWHILE_'.format(comp=comp)+str(numberWhile)+':', debug)
         nextTmp = self.nextIteration
 
@@ -322,6 +325,7 @@ class StatementWhile(Expression):
             tmp = nextTmp.evaluate()
             nextTmp = tmp
         
+        ir.setCode('GOTO :WHILE_{num}:'.format(num=numberLabel), debug)
         ir.setCode(':ENDWHILE_'+str(numberWhile)+':', debug)
 
 # Expresion de Asignación
