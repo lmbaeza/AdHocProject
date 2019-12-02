@@ -35,9 +35,11 @@ class StatementAssignID(Expression):
         self.value = value
 
     def evaluate(self):
-        global countRAM
-        countRAM += 1
-        table[self.id] = countRAM
+
+        if not table.get(self.id):
+            global countRAM
+            countRAM += 1
+            table[self.id] = countRAM
 
         # print(self.value)
 
