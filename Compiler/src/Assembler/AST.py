@@ -10,6 +10,8 @@ tmp = {}
 
 R1 = 'ax'
 R2 = 'dx'
+R3 = 'bx'
+R4 = 'cx'
 
 class StatementList(Expression):
     def __init__(self, typeName, value, _next):
@@ -46,6 +48,7 @@ class StatementAssignID(Expression):
         
         if isinstance(self.value, ExpressionInteger):
             self.value = self.value.evaluate()
+
             return '\tCARGAR PTR[{addr}], {value}'.format(
                 addr=table.get(self.id), value=self.value
             )
@@ -54,7 +57,7 @@ class StatementAssignID(Expression):
 
 
         return '\tCARGAR PTR[{addr}], {r1}'.format(
-            addr=table.get(self.id), r1=R1
+            addr=table.get(self.id), r1=R3
         )
 
 
@@ -68,9 +71,11 @@ class StatementAssignTMP(Expression):
     def evaluate(self):
         global countRAM
         #countRAM += 1
-        
-        tmp[self.tmp] = {'r':R1, "op": self.value.evaluate()}
 
+        out = '\tCOPIAR {}, {}'.format(R3, R1)
+        
+        tmp[self.tmp] = {'r':R3, "op": self.value.evaluate()}
+        return out
         # if isinstance(self.tmp, Expression):
         #     self.tmp = self.tmp.evaluate()
         # if isinstance(self.op, Expression):
@@ -112,9 +117,20 @@ class ExpressionBinop(Expression):
 
         if isinstance(self.op, Expression):
             self.op = self.op.evaluate()
-        if isinstance(self.right, Expression):
-            self.right = self.right.evaluate()
 
+
+        if isinstance(self.right, ExpressionInteger) or\
+            isinstance(self.right, ExpressionFloat):
+            self.right = self.right.evaluate()
+        elif isinstance(self.right, ExpressionID):
+            number = tmp.get(self.right.evaluate())
+            number = number.get('r')
+            self.right = 'PTR['+number+']'
+        elif isinstance(self.right, ExpressionTMP):
+            number = tmp.get(self.right.evaluate())
+            number = number.get('r')
+            self.right = number
+        
         print('\tCOPIAR {r1}, {value}'.format(
             r1=R1,
             value=str(self.left)
