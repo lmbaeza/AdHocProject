@@ -73,7 +73,8 @@ class ParserASM(object):
             p[0] = ExpressionBinop('BINOP', p[1], p[2], p[3])
     
     def p_expression_comparison(self, p):
-        r'expression : expression EQUAL expression'
+        r'''expression : expression EQUAL expression
+                       | expression NOT_EQUAL expression'''
         p[0] = ExpressionComparison('COMPARISON', p[1], p[2], p[3])
 
     def p_expression_uminus(self, p):

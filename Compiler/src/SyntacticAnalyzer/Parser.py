@@ -10,6 +10,8 @@ from Compiler.src.LexicalAnalyzer.Scanner import Lexer
 
 from Compiler.src.SemanticAnalyzer.SemanticAnalyzer import *
 from Compiler.src.Exceptions.Exceptions import *
+from Compiler.src.IntermediateCode.IR import IntermediateRepresentation
+
 
 class PythonDataType:
     # Variables Estaticas
