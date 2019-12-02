@@ -13,13 +13,15 @@ class LexerASM(object):
     t_EQUALS  = r'='
 
     t_EQUAL   = r'\=\=' 
+    t_NOT_EQUAL   = r'\!\=' 
 
     t_ignore = ' \t'
 
     def __init__(self, *args, **kwargs):
         self.tokens = [
             'PLUS', 'MINUS', 'TIMES', 'DIVIDE', 'EQUALS',
-            'ID', 'TMP', 'FLOAT', 'INTEGER', 'LABEL', 'EQUAL'
+            'ID', 'TMP', 'FLOAT', 'INTEGER', 'LABEL', 'EQUAL',
+            'NOT_EQUAL'
         ]
 
         self.keywordws = {

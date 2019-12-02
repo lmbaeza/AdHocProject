@@ -5,7 +5,7 @@
 from Compiler.src.SyntacticAnalyzer.Parser import Parser
 
 # Representación Intermedia de Codigo
-from Compiler.src.utils.Global import IntermediateRepresentation
+from Compiler.src.IntermediateCode.IR import IntermediateRepresentation
 
 # Assembler
 from Compiler.src.Assembler.ParserASM import ParserASM

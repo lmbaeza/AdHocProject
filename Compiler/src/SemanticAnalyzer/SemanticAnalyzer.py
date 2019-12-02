@@ -4,7 +4,7 @@
 from Compiler.src.utils import Global
 from Compiler.src.utils.Global import VariableGlobal
 from Compiler.src.utils.Global import getCode
-from Compiler.src.utils.Global import IntermediateRepresentation
+from Compiler.src.IntermediateCode.IR import IntermediateRepresentation
 from Compiler.src.Exceptions.Exceptions import *
 
 
