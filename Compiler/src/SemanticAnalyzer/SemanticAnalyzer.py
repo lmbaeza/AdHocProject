@@ -13,7 +13,7 @@ varGlobal = VariableGlobal()
 ir = IntermediateRepresentation()
 
 # si debug es True, muestra la generación de codigo intermedio en la terminal
-debug = True
+debug = False
 
 class Type:
     # Variables Estaticas
@@ -247,14 +247,14 @@ class StatementIf(Expression):
         number = varGlobal.incrementLabelCounter()
         comp = self.comparison.evaluate()
         
-        ir.setCode('IFNOT {comp} GOTO :ENDIF'.format(comp=comp)+str(number)+':', debug)
+        ir.setCode('IFNOT {comp} GOTO .endif_'.format(comp=comp)+str(number)+':', debug)
         nextTmp = self.next
 
         while nextTmp is not None:
             tmp = nextTmp.evaluate()
             nextTmp = tmp
         
-        ir.setCode(':ENDIF'+str(number)+':', debug)
+        ir.setCode('.endif_'+str(number)+':', debug)
 
 # Expresion de la sentencia IF-ELSE
 # if (comparison) {
@@ -278,7 +278,7 @@ class StatementIfElse(Expression):
         number = varGlobal.incrementLabelCounter()
         comp = self.comparison.evaluate()
 
-        ir.setCode('IFNOT {comp} GOTO :ELSE_'.format(comp=comp)+str(number)+':', debug)
+        ir.setCode('IFNOT {comp} GOTO .else_'.format(comp=comp)+str(number)+':', debug)
         nextTmp = self.nextIf
 
         while nextTmp is not None:
@@ -287,8 +287,8 @@ class StatementIfElse(Expression):
         
         numberElse = varGlobal.incrementLabelCounter()
 
-        ir.setCode('GOTO :ENDIF_{id}:'.format(id=numberElse), debug)
-        ir.setCode(':ELSE_'+str(number)+':', debug)
+        ir.setCode('GOTO .endif_{id}:'.format(id=numberElse), debug)
+        ir.setCode('.else_'+str(number)+':', debug)
         
         nextTmp = self.nextElse
 
@@ -296,7 +296,7 @@ class StatementIfElse(Expression):
             tmp = nextTmp.evaluate()
             nextTmp = tmp
         
-        ir.setCode(':ENDIF_{id}:'.format(id=numberElse), debug)
+        ir.setCode('.endif_{id}:'.format(id=numberElse), debug)
 
 #Expresión de while
 # while(expresion){
@@ -312,17 +312,21 @@ class StatementWhile(Expression):
         
 
     def evaluate(self):
-        numberWhile = varGlobal.incrementLabelCounter()
+        numberLabel = varGlobal.incrementLabelCounter()
+
+        ir.setCode('.while_{num}:'.format(num=numberLabel), debug)
         comp = self.comparison.evaluate()
 
-        ir.setCode('IFNOT {comp} GOTO :ENDWHILE_'.format(comp=comp)+str(numberWhile)+':', debug)
+        numberWhile = varGlobal.incrementLabelCounter()
+        ir.setCode('IFNOT {comp} GOTO .endwhile_'.format(comp=comp)+str(numberWhile)+':', debug)
         nextTmp = self.nextIteration
 
         while nextTmp is not None:
             tmp = nextTmp.evaluate()
             nextTmp = tmp
         
-        ir.setCode(':ENDWHILE_'+str(numberWhile)+':', debug)
+        ir.setCode('GOTO .while_{num}:'.format(num=numberLabel), debug)
+        ir.setCode('.while_'+str(numberWhile)+':', debug)
 
 # Expresion de Asignación
 # int x = 0;
@@ -350,13 +354,14 @@ class StatementAssign(Expression):
         val = self.value.evaluate()
         
         if isinstance(self.value, ExpressionID):
-        
-            if self.dataType == 'BOOLEAN':
-                if not self.table.get(val):
+            
+            if Type.check(type(self.table.get(val).evaluate())) != 'STRING':
+                if self.dataType == 'BOOLEAN':
+                    if not self.table.get(val):
+                        IncompatibleTypesException("Incompatible Types", self.code, self.line)
+                elif (self.table.get(val) is None) or \
+                        self.dataType != Type.check(type(self.table.get(val).evaluate())):
                     IncompatibleTypesException("Incompatible Types", self.code, self.line)
-            elif (self.table.get(val) is None) or \
-                    self.dataType != Type.check(type(self.table.get(val).evaluate())):
-                IncompatibleTypesException("Incompatible Types", self.code, self.line)
         
         varGlobal.setTable(self.varName, self.value)
 
