@@ -54,6 +54,9 @@ class Parser(object):
     def p_statement_fn_main(self, p):
         r'''statement : FN VOID MAIN LPAREN RPAREN LCURLY_BRACKET statements-list RCURLY_BRACKET'''
 
+        ir = IntermediateRepresentation()
+        ir.setCode('.main:\n')
+        
         next = p[7]
 
         while next is not None:
@@ -129,7 +132,7 @@ class Parser(object):
                             | expression_integer TIMES expression_integer
                             | expression_integer DIVIDE expression_integer'''
         
-        var = 'var'
+        var = '$var'
 
         p[0] = ExpressionBinop('BinOp', p, var,  p[1], p[3], p[2])
 
@@ -158,7 +161,7 @@ class Parser(object):
                         | expression_integer LARGE_EQ expression_integer
                         | expression_integer SMALL expression_integer
                         | expression_integer SMALL_EQ expression_integer'''
-        var = 'comp'
+        var = '$comp'
         p[0] = ComparisonBinop('ComparisonBinOp', p, var, p[1], p[3], p[2])
     
     

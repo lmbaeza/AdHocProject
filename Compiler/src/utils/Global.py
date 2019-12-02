@@ -117,7 +117,7 @@ class IntermediateRepresentation:
     def saveFile(self, filename='script.ir'):
         with open(filename, 'w') as file:
             file.write(self.instance.getCode())
-            print('Se generó la representación intermedia de codigo correctamente')
+            print('Se generó la representación intermedia de codigo correctamente\n')
 
 
 def getCode(parser):

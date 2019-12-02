@@ -13,7 +13,7 @@ varGlobal = VariableGlobal()
 ir = IntermediateRepresentation()
 
 # si debug es True, muestra la generación de codigo intermedio en la terminal
-debug = True
+debug = False
 
 class Type:
     # Variables Estaticas
