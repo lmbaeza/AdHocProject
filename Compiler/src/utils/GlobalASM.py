@@ -61,3 +61,11 @@ class VariableGlobalASM:
     def getAddressRAM(self):
         return self.instance.addressRAM
 
+
+class Registers(object):
+
+    def __init__(self, R1, R2, R3, R4):
+        self.R1 = R1
+        self.R2 = R2
+        self.R3 = R3
+        self.R4 = R4

@@ -1,5 +1,6 @@
 from .Code import AssemblyCode
 from Compiler.src.utils.GlobalASM import VariableGlobalASM
+from Compiler.src.utils.GlobalASM import Registers
 
 assembly = AssemblyCode()
 
@@ -10,10 +11,14 @@ class Expression(object):
     def evaluate(self):
         raise NotImplementedError
 
-R1 = 'ax'
-R2 = 'dx'
-R3 = 'bx'
-R4 = 'cx'
+register = Registers(
+    R1='ax',
+    R2='dx',
+    R3='bx',
+    R4='cx'
+)
+
+
 
 # Lista de Sentencias
 # <statement>
@@ -61,11 +66,11 @@ class StatementAssignID(Expression):
             )
         elif isinstance(self.value, ExpressionID):
             out = '\tCARGAR {r1}, PTR[{addr}]'.format(
-                r1=R1,
+                r1=register.R1,
                 addr=globalASM.getTable(self.value.evaluate())
             )
             out += '\n\tCARGAR PTR[{addr}], {r1}'.format(
-                addr=globalASM.getTable(self.id), r1=R1
+                addr=globalASM.getTable(self.id), r1=register.R1
             )
 
             return out
@@ -74,7 +79,7 @@ class StatementAssignID(Expression):
 
 
         return '\tCARGAR PTR[{addr}], {r1}'.format(
-            addr=globalASM.getTable(self.id), r1=R3
+            addr=globalASM.getTable(self.id), r1=register.R3
         )
 
 # $tmp = x operator y
@@ -87,10 +92,9 @@ class StatementAssignTMP(Expression):
 
     def evaluate(self):
 
-        out = '\tCOPIAR {}, {}'.format(R3, R1)
+        out = '\tCOPIAR {}, {}'.format(register.R3, register.R1)
         
-        # tmp[self.tmp] = {'r':R3, "op": self.value.evaluate()}
-        globalASM.setTMP(self.tmp, {'r':R3, "op": self.value.evaluate()})
+        globalASM.setTMP(self.tmp, {'r':register.R3, "op": self.value.evaluate()})
         return out
 
 # x operator y
@@ -133,23 +137,35 @@ class ExpressionBinop(Expression):
             self.right = number
         
         assembly.setCode('\tCOPIAR {r1}, {value}'.format(
-            r1=R1,
+            r1=register.R1,
             value=str(self.left)
         ))
         assembly.setCode('\tCOPIAR {r2}, {value}'.format(
-            r2=R2,
+            r2=register.R2,
             value=str(self.right)
         ))
-        # return str(self.left) + ' ' + str(self.op) + ' ' + str(self.right)
+        
 
         if self.op == '+':
-            return assembly.setCode('\tSUMA {r1}, {r2}'.format(r1=R1, r2=R2))
+            return assembly.setCode('\tSUMA {r1}, {r2}'.format(
+                r1=register.R1,
+                r2=register.R2)
+            )
         elif self.op == '-':
-            return assembly.setCode('\tRESTA {r1}, {r2}'.format(r1=R1, r2=R2))
+            return assembly.setCode('\tRESTA {r1}, {r2}'.format(
+                r1=register.R1,
+                r2=register.R2)
+            )
         elif self.op == '*':
-            return assembly.setCode('\tMULT {r1}, {r2}'.format(r1=R1, r2=R2))
+            return assembly.setCode('\tMULT {r1}, {r2}'.format(
+                r1=register.R1,
+                r2=register.R2)
+            )
         elif self.op == '/':
-            return assembly.setCode('\tDIV {r1}, {r2}'.format(r1=R1, r2=R2))
+            return assembly.setCode('\tDIV {r1}, {r2}'.format(
+                r1=register.R1,
+                r2=register.R2)
+            )
 
 # x == y
 # x != y
@@ -167,20 +183,20 @@ class ExpressionComparison(Expression):
             self.left = self.left.evaluate()
             
             assembly.setCode('\tCOPIAR {r1}, PTR[{addr}]'.format(
-                r1=R1,
+                r1=register.R1,
                 addr=globalASM.getTable(self.left)
             ))
             
         if isinstance(self.right, ExpressionID):
             self.right = self.right.evaluate()
             assembly.setCode('\tCOPIAR {r2}, PTR[{addr}]'.format(
-                r2=R2,
+                r2=register.R2,
                 addr=globalASM.getTable(self.right)
             ))
         elif isinstance(self.right, ExpressionInteger):
             self.right = self.right.evaluate()
             assembly.setCode('\tCOPIAR {r2}, {num}'.format(
-                r2=R2,
+                r2=register.R2,
                 num=self.right
             ))
         
@@ -241,8 +257,8 @@ class ExpressionIFNOT(Expression):
     def evaluate(self):
         
         out = '\tCOMPARAR {r1}, {r2}'.format(
-            r1=R1,
-            r2=R2
+            r1=register.R1,
+            r2=register.R2
         )
 
         data = globalASM.getTMP(self.comparison)
