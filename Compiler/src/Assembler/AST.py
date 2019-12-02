@@ -71,12 +71,12 @@ class StatementAssignTMP(Expression):
         
         tmp[self.tmp] = {'r':R1, "op": self.value.evaluate()}
 
-        if isinstance(self.tmp, Expression):
-            self.tmp = self.tmp.evaluate()
-        if isinstance(self.op, Expression):
-            self.op = self.op.evaluate()
-        if isinstance(self.value, Expression):
-            self.value = self.value.evaluate()
+        # if isinstance(self.tmp, Expression):
+        #     self.tmp = self.tmp.evaluate()
+        # if isinstance(self.op, Expression):
+        #     self.op = self.op.evaluate()
+        # if isinstance(self.value, Expression):
+        #     self.value = self.value.evaluate()
 
         
 

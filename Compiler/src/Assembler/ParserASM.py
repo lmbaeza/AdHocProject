@@ -36,19 +36,17 @@ class ParserASM(object):
     def p_statement_list(self, p):
         r'''statements-list : statement statements-list'''
         p[0] = StatementList('Statement List', p[1], p[2])
-        # if p[1] is not None:
-            # print(p[1].evaluate())
+        
 
     
     def p_statement_list_empty(self, p):
         r'''statements-list : '''
-        pass
 
     
     def p_statement_assign_id(self, p):
         r'statement : ID EQUALS expression'
         # print(list(p))
-        p[0] = StatementAssignID('ASSING_TMP', p[1], p[2], p[3])
+        p[0] = StatementAssignID('ASSING_ID', p[1], p[2], p[3])
 
     def p_statement_assign_tmp(self, p):
         r'statement : TMP EQUALS expression'
