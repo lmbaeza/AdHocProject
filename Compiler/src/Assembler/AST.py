@@ -62,6 +62,16 @@ class StatementAssignID(Expression):
             return '\tCARGAR PTR[{addr}], {value}'.format(
                 addr=table.get(self.id), value=self.value
             )
+        elif isinstance(self.value, ExpressionID):
+            out = '\tCARGAR {r1}, PTR[{addr}]'.format(
+                r1=R1,
+                addr=table.get(self.value.evaluate())
+            )
+            out += '\n\tCARGAR PTR[{addr}], {r1}'.format(
+                addr=table.get(self.id), r1=R1
+            )
+
+            return out
         elif isinstance(self.value, Expression):
             self.value = self.value.evaluate()
 

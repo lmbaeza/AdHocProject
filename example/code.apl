@@ -4,6 +4,8 @@ fn void main() {
     int zzz = 12 + ( 10 * 4) * 34 + 5;
     boolean bol = true;
 
+    int y = x;
+
     
     if (x == 1) {
         x := 50;
