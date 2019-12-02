@@ -266,8 +266,8 @@ class ExpressionIFNOT(Expression):
         if data.get('op'):
             if data.get('op') == '==':
                 out += '\n\tSALTO_SI_UNO '+self.label
-            elif data.get('op') == '==':
-                out += '\n\SALTO_SI_CERO '+self.label
+            elif data.get('op') == '!=':
+                out += '\n\tSALTO_SI_CERO '+self.label
         
         return out
         
