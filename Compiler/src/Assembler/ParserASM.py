@@ -45,12 +45,10 @@ class ParserASM(object):
     
     def p_statement_assign_id(self, p):
         r'statement : ID EQUALS expression'
-        # print(list(p))
         p[0] = StatementAssignID('ASSING_ID', p[1], p[2], p[3])
 
     def p_statement_assign_tmp(self, p):
         r'statement : TMP EQUALS expression'
-        # print(list(p))
         p[0] = StatementAssignTMP('ASSING_TMP', p[1], p[2], p[3])
         
 
@@ -63,7 +61,6 @@ class ParserASM(object):
                   | expression MINUS expression
                   | expression TIMES expression
                   | expression DIVIDE expression'''
-        # print(list(p))
         
         if p[2] == '+':
             p[0] = ExpressionBinop('BINOP', p[1], p[2], p[3])
@@ -80,28 +77,21 @@ class ParserASM(object):
 
     def p_expression_uminus(self, p):
         "expression : MINUS expression %prec UMINUS"
-        # print(list(p))
         p[0] = ExpressionUminus('UMINUS', p[2])
-        # p[0] = -p[2]
     
 
     def p_expression_integer(self, p):
         "expression : INTEGER"
-        # print(list(p))
         p[0] = ExpressionInteger('INT', p[1])
-        # p[0] = p[1]
 
 
     def p_expression_float(self, p):
         "expression : FLOAT"
-        # print(list(p))
         p[0] = ExpressionFloat('FLOAT', p[1])
-        # p[0] = p[1]
 
 
     def p_expression_id(self, p):
         "expression : ID"
-        # print(list(p))
         p[0] = ExpressionID('ID', p[1])
         # p[0] = p[1]
         # try:
@@ -112,32 +102,25 @@ class ParserASM(object):
 
     def p_expression_tmp(self, p):
         "expression : TMP"
-        # print(list(p))
         p[0] = ExpressionTMP('TMP', p[1])
-        #p[0] = p[1]
 
     def p_expression_ifnot(self, p):
         r'''expression : IFNOT TMP GOTO LABEL
                        | IFNOT ID GOTO LABEL'''
-        # print(list(p))
         
         p[0] = ExpressionIFNOT('IFNOT', p[2], p[4])
-        # print(list(p))
     
     def p_expression_goto(self, p):
         r'expression : GOTO LABEL'
-        # print(list(p))
         p[0] = ExpressionGOTO('GOTO', p[1], p[2])
 
     def p_expression_label(self, p):
         r'expression : LABEL'
-        # print(list(p))
         p[0] = ExpressionLABEL('LABEL', p[1])
 
 
     def p_error(self, p):
         if p:
-            # print(list(p))
             print("Syntax error at '%s'" % p.value)
         else:
             print("Syntax error at EOF")

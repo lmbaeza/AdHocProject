@@ -1,3 +1,7 @@
+from .Code import AssemblyCode
+
+assembly = AssemblyCode()
+
 
 class Expression(object):
     def evaluate(self):
@@ -23,7 +27,7 @@ class StatementList(Expression):
         if self.value is not None:
             data = self.value.evaluate()
             if data:
-                print(data)
+                assembly.setCode(data)
         
         return self.next
 
@@ -40,8 +44,6 @@ class StatementAssignID(Expression):
             global countRAM
             countRAM += 1
             table[self.id] = countRAM
-
-        # print(self.value)
 
         if isinstance(self.id, Expression):
             self.id = self.id.evaluate()
@@ -133,24 +135,24 @@ class ExpressionBinop(Expression):
             number = number.get('r')
             self.right = number
         
-        print('\tCOPIAR {r1}, {value}'.format(
+        assembly.setCode('\tCOPIAR {r1}, {value}'.format(
             r1=R1,
             value=str(self.left)
         ))
-        print('\tCOPIAR {r2}, {value}'.format(
+        assembly.setCode('\tCOPIAR {r2}, {value}'.format(
             r2=R2,
             value=str(self.right)
         ))
         # return str(self.left) + ' ' + str(self.op) + ' ' + str(self.right)
 
         if self.op == '+':
-            return print('\tSUMA {r1}, {r2}'.format(r1=R1, r2=R2))
+            return assembly.setCode('\tSUMA {r1}, {r2}'.format(r1=R1, r2=R2))
         elif self.op == '-':
-            return print('\tRESTA {r1}, {r2}'.format(r1=R1, r2=R2))
+            return assembly.setCode('\tRESTA {r1}, {r2}'.format(r1=R1, r2=R2))
         elif self.op == '*':
-            return print('\tMULT {r1}, {r2}'.format(r1=R1, r2=R2))
+            return assembly.setCode('\tMULT {r1}, {r2}'.format(r1=R1, r2=R2))
         elif self.op == '/':
-            return print('\tDIV {r1}, {r2}'.format(r1=R1, r2=R2))
+            return assembly.setCode('\tDIV {r1}, {r2}'.format(r1=R1, r2=R2))
 
 class ExpressionComparison(Expression):
     def __init__(self, typeName, left, op, right):
@@ -165,7 +167,7 @@ class ExpressionComparison(Expression):
         if isinstance(self.left, ExpressionID):
             self.left = self.left.evaluate()
             
-            print('\tCOPIAR {r1}, PTR[{addr}]'.format(
+            assembly.setCode('\tCOPIAR {r1}, PTR[{addr}]'.format(
                 r1=R1,
                 addr=table.get(self.left)
             ))
@@ -176,13 +178,13 @@ class ExpressionComparison(Expression):
 
         if isinstance(self.right, ExpressionID):
             self.right = self.right.evaluate()
-            print('\tCOPIAR {r2}, PTR[{addr}]'.format(
+            assembly.setCode('\tCOPIAR {r2}, PTR[{addr}]'.format(
                 r2=R2,
                 addr=table.get(self.right)
             ))
         elif isinstance(self.right, ExpressionInteger):
             self.right = self.right.evaluate()
-            print('\tCOPIAR {r2}, {num}'.format(
+            assembly.setCode('\tCOPIAR {r2}, {num}'.format(
                 r2=R2,
                 num=self.right
             ))

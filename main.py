@@ -9,6 +9,7 @@ from Compiler.src.utils.Global import IntermediateRepresentation
 
 # Assembler
 from Compiler.src.Assembler.ParserASM import ParserASM
+from Compiler.src.Assembler.Code import AssemblyCode
 
 parser = Parser()
 
@@ -25,3 +26,6 @@ parser = ParserASM()
 with open('script.ir', 'r') as file:
     parser.run(file.read())
 
+assembly = AssemblyCode()
+
+assembly.saveFile()
