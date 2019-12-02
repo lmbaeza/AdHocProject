@@ -13,7 +13,7 @@ varGlobal = VariableGlobal()
 ir = IntermediateRepresentation()
 
 # si debug es True, muestra la generación de codigo intermedio en la terminal
-debug = True
+debug = False
 
 class Type:
     # Variables Estaticas
@@ -354,13 +354,14 @@ class StatementAssign(Expression):
         val = self.value.evaluate()
         
         if isinstance(self.value, ExpressionID):
-        
-            if self.dataType == 'BOOLEAN':
-                if not self.table.get(val):
+            
+            if Type.check(type(self.table.get(val).evaluate())) != 'STRING':
+                if self.dataType == 'BOOLEAN':
+                    if not self.table.get(val):
+                        IncompatibleTypesException("Incompatible Types", self.code, self.line)
+                elif (self.table.get(val) is None) or \
+                        self.dataType != Type.check(type(self.table.get(val).evaluate())):
                     IncompatibleTypesException("Incompatible Types", self.code, self.line)
-            elif (self.table.get(val) is None) or \
-                    self.dataType != Type.check(type(self.table.get(val).evaluate())):
-                IncompatibleTypesException("Incompatible Types", self.code, self.line)
         
         varGlobal.setTable(self.varName, self.value)
 

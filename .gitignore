@@ -115,3 +115,6 @@ parser.out
 
 # Intermediate Representation
 *.ir
+
+# Codigo Ensamblador
+*.asm
