@@ -27,6 +27,7 @@ class ParserASM(object):
     def p_run(self, p):
         r'run : statements-list'
 
+        # Ejecuta todas las sentencias de codigo
         next = p[1]
 
         while next is not None:
@@ -93,12 +94,6 @@ class ParserASM(object):
     def p_expression_id(self, p):
         "expression : ID"
         p[0] = ExpressionID('ID', p[1])
-        # p[0] = p[1]
-        # try:
-        #     p[0] = names[p[1]]
-        # except LookupError:
-        #     print("Undefined name '%s'" % p[1])
-        #     p[0] = 0
 
     def p_expression_tmp(self, p):
         "expression : TMP"
@@ -127,3 +122,4 @@ class ParserASM(object):
     
     def run(self, code):
         self.parser.parse(code)
+

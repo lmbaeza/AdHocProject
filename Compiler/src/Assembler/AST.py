@@ -17,6 +17,11 @@ R2 = 'dx'
 R3 = 'bx'
 R4 = 'cx'
 
+# Lista de Sentencias
+# <statement>
+# ...
+# ...
+# <statement>
 class StatementList(Expression):
     def __init__(self, typeName, value, _next):
         self.typeName = typeName
@@ -31,6 +36,7 @@ class StatementList(Expression):
         
         return self.next
 
+# identificador = x operador y
 class StatementAssignID(Expression):
     def __init__(self, typeName, ID, op, value):
         self.typeName = typeName
@@ -64,7 +70,7 @@ class StatementAssignID(Expression):
             addr=table.get(self.id), r1=R3
         )
 
-
+# $tmp = x operator y
 class StatementAssignTMP(Expression):
     def __init__(self, typeName, tmp, op, value):
         self.typeName = typeName
@@ -80,23 +86,8 @@ class StatementAssignTMP(Expression):
         
         tmp[self.tmp] = {'r':R3, "op": self.value.evaluate()}
         return out
-        # if isinstance(self.tmp, Expression):
-        #     self.tmp = self.tmp.evaluate()
-        # if isinstance(self.op, Expression):
-        #     self.op = self.op.evaluate()
-        # if isinstance(self.value, Expression):
-        #     self.value = self.value.evaluate()
 
-        
-
-class StatementExpr(Expression):
-    def __init__(self, typeName, expr):
-        self.typeName = typeName
-        self.expr = expr
-
-    def evaluate(self):
-        return '\tExpr'
-
+# x operator y
 class ExpressionBinop(Expression):
     def __init__(self, typeName, left, op, right):
         self.typeName = typeName
@@ -154,6 +145,8 @@ class ExpressionBinop(Expression):
         elif self.op == '/':
             return assembly.setCode('\tDIV {r1}, {r2}'.format(r1=R1, r2=R2))
 
+# x == y
+# x != y
 class ExpressionComparison(Expression):
     def __init__(self, typeName, left, op, right):
         self.typeName = typeName
@@ -172,10 +165,6 @@ class ExpressionComparison(Expression):
                 addr=table.get(self.left)
             ))
             
-        # if isinstance(self.op, Expression):
-        #     self.op = self.op.evaluate()
-        
-
         if isinstance(self.right, ExpressionID):
             self.right = self.right.evaluate()
             assembly.setCode('\tCOPIAR {r2}, PTR[{addr}]'.format(
@@ -191,6 +180,7 @@ class ExpressionComparison(Expression):
         
         return str(self.op)
 
+# -x
 class ExpressionUminus(Expression):
     def __init__(self, typeName, value):
         self.typeName = typeName
@@ -199,6 +189,7 @@ class ExpressionUminus(Expression):
     def evaluate(self):
         return str(-self.value)
 
+# number
 class ExpressionInteger(Expression):
     def __init__(self, typeName, value):
         self.typeName = typeName
@@ -207,6 +198,7 @@ class ExpressionInteger(Expression):
     def evaluate(self):
         return str(self.value)
 
+# Float
 class ExpressionFloat(Expression):
     def __init__(self, typeName, value):
         self.typeName = typeName
@@ -215,6 +207,7 @@ class ExpressionFloat(Expression):
     def evaluate(self):
         return str(self.value)
 
+# x = y
 class ExpressionID(Expression):
     def __init__(self, typeName, ID):
         self.typeName = typeName
@@ -223,6 +216,7 @@ class ExpressionID(Expression):
     def evaluate(self):
         return str(self.id)
 
+# x = $var1
 class ExpressionTMP(Expression):
     def __init__(self, typeName, tmp):
         self.typeName = typeName
@@ -231,6 +225,7 @@ class ExpressionTMP(Expression):
     def evaluate(self):
         return str(self.tmp)
 
+# IFNOT comparison GOTO .label:
 class ExpressionIFNOT(Expression):
     def __init__(self, typeName, comparison, label):
         self.typeName = typeName
@@ -254,7 +249,7 @@ class ExpressionIFNOT(Expression):
         
         return out
         
-
+# GOTO .label:
 class ExpressionGOTO(Expression):
     def __init__(self, typeName, value, label):
         self.typeName = typeName
@@ -264,6 +259,7 @@ class ExpressionGOTO(Expression):
     def evaluate(self):
         return '\t'+str(self.value) + ' ' + self.label
 
+# .label:
 class ExpressionLABEL(Expression):
     def __init__(self, typeName, value):
         self.typeName = typeName
@@ -271,3 +267,4 @@ class ExpressionLABEL(Expression):
 
     def evaluate(self):
         return str(self.value)
+
