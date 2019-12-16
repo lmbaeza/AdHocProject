@@ -111,9 +111,9 @@ class ExpressionBinop(Expression):
             isinstance(self.left, ExpressionFloat):
             self.left = self.left.evaluate()
         elif isinstance(self.left, ExpressionID):
-            number = globalASM.getTMP(self.left.evaluate())
-            number = number.get('r')
-            self.left = 'PTR['+number+']'
+            number = globalASM.getTable(self.left.evaluate())
+            # number = number.get('r')
+            self.left = 'PTR['+str(number)+']'
         elif isinstance(self.left, ExpressionTMP):
             number = globalASM.getTMP(self.left.evaluate())
             number = number.get('r')
@@ -128,9 +128,9 @@ class ExpressionBinop(Expression):
             isinstance(self.right, ExpressionFloat):
             self.right = self.right.evaluate()
         elif isinstance(self.right, ExpressionID):
-            number = globalASM.getTMP(self.right.evaluate())
-            number = number.get('r')
-            self.right = 'PTR['+number+']'
+            number = globalASM.getTable(self.right.evaluate())
+            # number = number.get('r')
+            self.right = 'PTR['+str(number)+']'
         elif isinstance(self.right, ExpressionTMP):
             number = globalASM.getTMP(self.right.evaluate())
             number = number.get('r')
