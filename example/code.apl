@@ -14,6 +14,6 @@ fn void main() {
     }
 
     while (x==88){
-        x:=88;
+        x := x + 1;
     }
 }
