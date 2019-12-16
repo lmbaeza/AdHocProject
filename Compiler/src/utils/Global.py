@@ -16,6 +16,13 @@ class VariableGlobal:
         def __str__(self):
             return repr(self) + self.val
         
+        def clear(self):
+            self.count = 1
+            self.table = {}
+            self.variableCounter = 0
+            self.labelCounter = 0
+            self.comparisonCounter = 0
+        
         def incrementCount(self, number):
             self.count += number
         
@@ -49,6 +56,9 @@ class VariableGlobal:
 
     def __str__(self):
         return str(self.instance)
+    
+    def clear(self):
+        self.instance.clear()
     
     def incrementCount(self, number):
         self.instance.incrementCount(number)

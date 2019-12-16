@@ -133,11 +133,13 @@ class Lexer(object):
     
     
     def test(self,data):
+        out = ''
         self.lexer.input(data)
         while True:
             tok = self.lexer.token()
             if not tok: break
-            print(tok)
+            out += str(tok) + '\n'
+        return out
     
 
     def getToken(self):
