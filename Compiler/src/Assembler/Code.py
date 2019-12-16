@@ -6,6 +6,9 @@ class AssemblyCode:
         def __str__(self):
             return repr(self)
         
+        def clear(self):
+            self.code = ''
+        
         def setCode(self, codestr):
             self.code += '\n' + str(codestr)
         
@@ -23,6 +26,9 @@ class AssemblyCode:
 
     def __str__(self):
         return str(self.instance)
+    
+    def clear(self):
+        self.instance.clear()
     
     def setCode(self, codestr, debug=False):
         if debug:

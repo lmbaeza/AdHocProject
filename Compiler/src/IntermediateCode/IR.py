@@ -16,6 +16,9 @@ class IntermediateRepresentation:
         
         def getCode(self):
             return self.code
+        
+        def clear(self):
+            self.code = ''
 
     instance = None
 
@@ -28,6 +31,9 @@ class IntermediateRepresentation:
 
     def __str__(self):
         return str(self.instance)
+    
+    def clear(self):
+        self.instance.clear()
     
     def setCode(self, codestr, debug=False):
         if debug:

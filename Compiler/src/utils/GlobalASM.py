@@ -10,6 +10,11 @@ class VariableGlobalASM:
         def __str__(self):
             return repr(self) + self.val
         
+        def clear(self):
+            self.addressRAM = 0
+            self.table = {}
+            self.tmp = {}
+        
         def incrementAddressRAM(self):
             self.addressRAM += 1
         
@@ -36,6 +41,9 @@ class VariableGlobalASM:
 
     def __str__(self):
         return str(self.instance)
+    
+    def clear(self):
+        self.instance.clear()
     
     def incrementAddressRAM(self):
         self.instance.incrementAddressRAM()
