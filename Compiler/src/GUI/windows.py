@@ -24,6 +24,11 @@ sample3 = None
 with open('example/sample-3.apl', 'r') as file:
     sample3 = file.read()
 
+sample4 = None
+
+with open('example/sample-4.apl', 'r') as file:
+    sample4 = file.read()
+
 class Windows:
     def __init__(self, windows):
         self.win = windows
@@ -48,7 +53,7 @@ class Windows:
 
         variable = StringVar(frame)
         variable.set("Sample 1") # default value
-        options = ["Sample 1", "Sample 2", "Sample 3"]
+        options = ["Sample 1", "Sample 2", "Sample 3", "Sample 4"]
         self.select = OptionMenu(frame, variable, *(options),command=self.onselect)
         self.select.grid(row=3, columnspan=2, column=2)
 
@@ -69,6 +74,9 @@ class Windows:
             self.codeTxt.insert(INSERT, sample2)
         elif str(event) == 'Sample 3':
             self.codeTxt.insert(INSERT, sample3)
+        elif str(event) == 'Sample 4':
+            self.codeTxt.insert(INSERT, sample4)
+        
         self.btn1['state'] = 'normal'
         self.btn2['state'] = 'disabled'
         self.btn3['state'] = 'disabled'
@@ -136,6 +144,8 @@ class Windows:
             self.codeTxt.insert(INSERT, sample2)
         elif str(self.select['text']) == 'Sample 3':
             self.codeTxt.insert(INSERT, sample3)
+        elif str(self.select['text']) == 'Sample 4':
+            self.codeTxt.insert(INSERT, sample4)
 
         self.btn1['state'] = 'normal'
         self.btn2['state'] = 'disabled'
