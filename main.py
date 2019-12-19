@@ -7,4 +7,5 @@ from tkinter import *
 
 tk = Tk()
 windows = Windows(tk)
+tk.resizable(0,0)
 tk.mainloop()
